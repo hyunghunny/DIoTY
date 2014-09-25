@@ -3,7 +3,7 @@
 int led_state;
 unsigned long time;
 
-#define THERM_PIN   0  // 10ktherm & 10k resistor as divider.
+#define THERM_PIN   0  // 10k thermo & 10k resistor as divider.
 
 //Thermistor lookup Table
 //
@@ -124,7 +124,6 @@ void loop() {
   //Serial.println(therm, DEC);
   float temp = (float)therm / 10.0;
   Serial.println(temp, 1);
- 
   
   if (millis()-time > 1000) {   
     time = millis();

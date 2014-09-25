@@ -125,20 +125,20 @@ router.get('/sensors/:id/temperatures', function (req, res) {
 router.get('/sensors/:id/temperatures/latest', function (req, res) {
     try {
         var id = req.params.id;
-        var queries = req.query;  // TODO:handle extra queries 
+        
         // search the sensor in the sensors
         var sensorObj = findSensor(id);
 
         if (sensorObj == null) {
             throw new Error('404');
         }
-        var tempList = model.getLatestTemperature(function (tempList) {
-            var temps = {
-                temperatures: tempList
+        var tempList = model.getLatestTemperature(function (temp) {
+            var tempObj = {
+                temperature: temp
             };
 
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(temps));
+            res.end(JSON.stringify(tempObj));
         });
 
     } catch (err) {

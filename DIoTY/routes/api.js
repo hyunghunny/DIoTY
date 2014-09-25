@@ -46,7 +46,7 @@ router.get('/sensors/:id', function (req, res) {
         var id = req.params.id;
         // search the sensor in the sensors
         var sensorObj = findSensor(id);
-        Con
+        
         if (sensorObj == null) {
             throw new Error('404');
         }

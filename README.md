@@ -13,11 +13,11 @@ The deliverables may contain the following:
 
 Followings are the prerequistes:
 
-- Arduino starter kit for redboard 
+- sparkfun Arduino starter kit for redboard (https://www.sparkfun.com/products/12789)
 - Node.js
 - MySQL (it will be replaced to MongoDB soon)
-- RESTful Web APIs
-- HTML5
+- How to design or invoke RESTful Web APIs
+- HTML5 basic
 
 The steps to make it works will be released soon. (But, the content will be written in korean.)
 Please check it out at the slideshare: http://www.slideshare.net/ChoHyunghun/

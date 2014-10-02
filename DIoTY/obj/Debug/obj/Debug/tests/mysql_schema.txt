@@ -1,0 +1,12 @@
+mysql -u root -p
+
+CREATE DB temps 
+
+USE temps
+
+CREATE TABLE tempData (
+tempId int(11) AUTO_INCREMENT NOT NULL,
+tempDate datetime NOT NULL,
+tempCelsius decimal(4,2) NOT NULL,
+constraint tempData_PK primary key (tempId)
+);

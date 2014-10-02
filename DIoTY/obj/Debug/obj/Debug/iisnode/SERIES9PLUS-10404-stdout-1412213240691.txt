@@ -1,2 +1,0 @@
-Express server listening on port 3000
-database connected successfully

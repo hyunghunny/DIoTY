@@ -134,3 +134,26 @@ function setTempAndDraw() {
 		draw();
 	}
 }
+
+var openapi = new OpenAPI();
+openapi.sensors.retrieve(function (sensors) {
+    logger.i('sensors are successfully retrieved.');
+    
+    // returns the list
+    for (var i = 0; i < sensors.length; i++) {
+        logger.i('number of sensors: ' + sensors.length);
+        logger.i(sensors[i].id);
+        if (sensors[i].type == 'thermometer') {
+
+            sensors[i].getLatestTemp(function (temp) {
+                logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+                tempDiv = document.getElementById('temp');
+                tempDiv.value = temp.value;
+                slider = document.getElementById('defaultSlider');
+                slider.value = temp.value;
+                draw();
+
+            });
+        }
+    }
+})

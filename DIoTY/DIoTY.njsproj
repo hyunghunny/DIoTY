@@ -50,7 +50,6 @@
     <Content Include="obj\Debug\views\index.jade" />
     <Content Include="obj\Debug\views\layout.jade" />
     <Content Include="obj\Debug\public\images\thermometer-template.png" />
-    <Compile Include="obj\Debug\public\javascripts\open-api.js" />
     <Compile Include="obj\Debug\public\javascripts\thermometer.js" />
     <Content Include="obj\Debug\public\stylesheets\style.css" />
     <Content Include="public\images\thermometer-template.png" />

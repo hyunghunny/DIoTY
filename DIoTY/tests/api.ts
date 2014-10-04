@@ -147,20 +147,23 @@ function OpenAPI(options?:OpenAPIOptions) {
     return APIs;
 }
 
+// Sample code for how to retrieve temperatures with a thermometer
 var apis = new OpenAPI();
-apis.sensors.retrieve(function (sensor) {
+apis.sensors.retrieve(function (sensors) {
         logger.i('sensors are successfully retrieved.');
-        if (sensor.length >= 1) {
+        if (sensors.length >= 1) {
             // returns the list
-            for (var i = 0; i < sensor.length; i++) {
-                logger.i('number of sensors: ' + sensor.length);
-                logger.i(sensor[i].id);
-                sensor[i].retrieveAll(function (list) {
-                    logger.i(list.length + ' temperatures are retrieved properly.');
-                });
-                sensor[i].retrieveLatest(function (temp) {
-                    logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
-                }); 
+            for (var i = 0; i < sensors.length; i++) {
+                logger.i('number of sensors: ' + sensors.length);
+                logger.i(sensors[i].id);
+                if (sensors[i].type == 'thermometer') {
+                    sensor[i].retrieveAll(function (list) {
+                        logger.i(list.length + ' temperatures are retrieved properly.');
+                    });
+                    sensor[i].retrieveLatest(function (temp) {
+                        logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+                    }); 
+                }
             }
 
         } else {

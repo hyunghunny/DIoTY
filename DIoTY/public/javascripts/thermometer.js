@@ -135,7 +135,7 @@ function setTempAndDraw() {
 	}
 }
 
-var openapi = new OpenAPI();
+var openapi = new OpenAPIManager();
 openapi.sensors.retrieve(function (sensors) {
     logger.i('sensors are successfully retrieved.');
     

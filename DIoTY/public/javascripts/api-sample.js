@@ -1,13 +1,13 @@
-
-
 if (typeof module !== 'undefined') {
+    // script on server side
     openapi = require('./api.ts.js').openapi;
     logger = require('./api.ts.js').logger;    
 } else {
-    openapi = new OpenAPI();
+    // script on client side
+    openapi = new OpenAPIManager();
 }
 
-// Sample code for how to retrieve temperatures with a thermometer
+ // Sample code for how to retrieve temperatures with a thermometer
 openapi.sensors.retrieve(function (sensors) {
     logger.i('sensors are successfully retrieved.');
 
@@ -24,4 +24,7 @@ openapi.sensors.retrieve(function (sensors) {
             }); 
         }
     }   
-})
+}, function (err) {
+    logger.e('Unable to retrieve sensors due to ' + err);
+})   
+

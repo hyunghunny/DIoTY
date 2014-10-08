@@ -1,0 +1,513 @@
+<!DOCTYPE html PUBLIC "html">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style>
+              @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+            </style>
+<link rel="stylesheet" type="text/css" href="../stylesheets/widlhtml.css" media="screen">
+<title>
+              Open API for JavaScript
+                </title>
+</head>
+<body><div class="api" id="">
+<a href="http://webofthink.tistory.com/"><img src="../images/cover.jpg" alt="Web of Think logo"></a><h1>Do IoT Yourself Open API for JavaScript</h1>
+<h3>Oct. 2014</h3>
+<h2>Authors</h2>
+<ul class="authors">
+          Web of Think
+          </ul>
+<p class="copyright"><small>© Web of Think, 2014. All rights reserved.</small></p>
+<hr>
+<h2>Abstract</h2>
+<h2>Table of Contents</h2>
+<ul class="toc">
+<li>
+<a href="#interfaces">Interfaces</a><ul class="toc">
+<li><a href="#::OpenAPIManager"><code>OpenAPIManager</code></a></li>
+<li><a href="#::SensorsManager"><code>SensorsManager</code></a></li>
+<li><a href="#::Sensor"><code>Sensor</code></a></li>
+<li><a href="#::Thermometer"><code>Thermometer</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#dictionaries">Dictionary types</a><ul class="toc">
+<li><a href="#::OpenAPIOptions"><code>OpenAPIOptions</code></a></li>
+<li><a href="#::TemperatureInfo"><code>TemperatureInfo</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#callbacks">Callbacks</a><ul class="toc">
+<li><a href="#::SensorRetrieveCallback"><code>SensorRetrieveCallback</code></a></li>
+<li><a href="#::SensorListRetrieveCallback"><code>SensorListRetrieveCallback</code></a></li>
+<li><a href="#::ErrorCallback"><code>ErrorCallback</code></a></li>
+<li><a href="#::TemperatureRetrieveCallback"><code>TemperatureRetrieveCallback</code></a></li>
+<li><a href="#::TemperatureListRetrieveCallback"><code>TemperatureListRetrieveCallback</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#enums">Enums</a><ul class="toc">
+<li><a href="#::SensorType"><code>SensorType</code></a></li>
+<li><a href="#::SensorMode"><code>SensorMode</code></a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2>Summary of Methods</h2>
+<table class="summary">
+<thead><tr>
+<th>Interface</th>
+<th>Method</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="#::OpenAPIManager">OpenAPIManager</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#::SensorsManager">SensorsManager</a></td>
+<td>void <a href="#retrieveidp134512">retrieve</a>(SensorListRetrieveCallback scb, ErrorCallback ecb, DOMString id)</td>
+</tr>
+<tr>
+<td><a href="#::Sensor">Sensor</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#::Thermometer">Thermometer</a></td>
+<td>void <a href="#getTempListidp170560">getTempList</a>(TemperatureListRetrieveCallback scb, ErrorCallback ecb)<br>void <a href="#getLatestTempidp175024">getLatestTemp</a>(TemperatureRetrieveCallback scb, ErrorCallback ecb)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="intro">Introduction</h2>
+<div class="interfaces" id="interfaces">
+<h2>Interfaces</h2>
+<div class="interface" id="::OpenAPIManager">
+<h3><code>OpenAPIManager</code></h3>
+<div class="brief"><p>
+ Open API entry point
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">[Constructor(OpenAPIOptions options)]
+
+interface OpenAPIManager {
+
+        attribute SensorsManager sensors;
+
+
+        attribute OpenAPIOptions options;
+};</pre>
+<div class="example">
+<h5>Code example</h5>
+<pre class="examplecode"> var openapi = new OpenAPIManager();
+ </pre>
+</div>
+<div class="attributes">
+<h4>Attributes</h4>
+<dl>
+<dt class="attribute" id="sensors"><code>SensorsManager sensors</code></dt>
+<dd><div class="brief"><p>
+ The sensors which can be retrieved in this open API.
+          </p></div></dd>
+<dt class="attribute" id="options"><code>OpenAPIOptions options</code></dt>
+<dd><div class="brief"><p>
+ The default options of open API.
+          </p></div></dd>
+</dl>
+</div>
+</div>
+<div class="interface" id="::SensorsManager">
+<h3><code>SensorsManager</code></h3>
+<div class="brief"><p>
+ Sensors Manager interface
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">[Constructor(DOMString url)]
+
+interface SensorsManager {
+
+        void retrieve(SensorListRetrieveCallback scb, optional ErrorCallback ecb, optional DOMString id);
+
+};</pre>
+<div class="example">
+<h5>Code example</h5>
+<pre class="examplecode"> if (typeof module !== 'undefined') {
+   // script on server side
+   openapi = require('./api.ts.js').openapi;
+    logger = require('./api.ts.js').logger;    
+ } else {
+   // script on client side
+   openapi = new OpenAPI();
+ }
+ openapi.sensors.retrieve(function (sensors) {
+   console.log('sensors are successfully retrieved.');
+
+ });
+ </pre>
+</div>
+<div class="methods">
+<h4>Methods</h4>
+<dl>
+<dt class="method" id="retrieveidp134512"><code>void retrieve(SensorListRetrieveCallback scb, optional ErrorCallback ecb, optional DOMString id);</code></dt>
+<dd>
+<div class="brief"><p>
+ Retrieves all available sensors attached.
+If id parameter is passed, it will retrieve a specific sensor with id value
+          </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">        void retrieve(SensorListRetrieveCallback scb, optional ErrorCallback ecb, optional DOMString id);</pre>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+        <li class="param">scb:
+                
+ The callback when available sensors are retrieved successfully.
+              </li>
+        <li class="param">ecb:
+                
+ The callback when an error is occurred. 
+              </li>
+        <li class="param">id:
+                
+ The ID of a sensor to be retrieved.     
+              </li>
+      </ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="interface" id="::Sensor">
+<h3><code>Sensor</code></h3>
+<div class="brief"><p>
+ The abstract interface of a sensor.
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">[Constructor(DOMString url, DOMString id, SensorType type)]
+
+interface Sensor {
+
+        attribute DOMString id;
+
+
+        attribute SensorType type;
+
+
+        attribute SensorMode switch;
+};</pre>
+<div class="attributes">
+<h4>Attributes</h4>
+<dl>
+<dt class="attribute" id="id"><code>DOMString id</code></dt>
+<dd><div class="brief"><p>
+ The identification of this sensor
+          </p></div></dd>
+<dt class="attribute" id="type"><code>SensorType type</code></dt>
+<dd><div class="brief"><p>
+ The type of this sensor
+          </p></div></dd>
+<dt class="attribute" id="switch"><code>SensorMode switch</code></dt>
+<dd><div class="brief"><p>
+ the on-off status of this sensor
+          </p></div></dd>
+</dl>
+</div>
+</div>
+<div class="interface" id="::Thermometer">
+<h3><code>Thermometer</code></h3>
+<div class="brief"><p>
+ The interface of a theremeter sensor.
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">[Constructor(DOMString url, DOMString id)]
+
+interface Thermometer : Sensor {
+        
+
+         void getTempList(TemperatureListRetrieveCallback scb, optional ErrorCallback ecb); 
+
+
+         void getLatestTemp(TemperatureRetrieveCallback scb, optional ErrorCallback ecb); 
+};</pre>
+<div class="example">
+<h5>Code example</h5>
+<pre class="examplecode"> openapi.sensors.retrieve(function (sensors) {
+   logger.i('sensors are successfully retrieved.');
+
+   // returns the list
+   for (var i = 0; i  sensors.length; i++) {
+       if (sensors[i].type == 'thermometer') {
+           sensors[i].getTempList(function (list) {
+               logger.i(list.length + ' temperatures are retrieved properly.');
+           });
+           sensors[i].getLatestTemp(function (temp) {
+               logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+           }); 
+       }
+   }   
+ }, function (err) {
+    logger.e('Unable to retrieve sensors due to ' + err);
+ }) 
+ </pre>
+</div>
+      
+    <div class="methods">
+<h4>Methods</h4>
+<dl>
+<dt class="method" id="getTempListidp170560"><code>void getTempList(TemperatureListRetrieveCallback scb, optional ErrorCallback ecb);</code></dt>
+<dd>
+<div class="brief"><p>
+ Retrieve all the temperatures. 
+          </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">         void getTempList(TemperatureListRetrieveCallback scb, optional ErrorCallback ecb);</pre>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+        <li class="param">scb:
+                
+ The callback which will be invoked when the list is retrieved properly.
+              </li>
+        <li class="param">ecb:
+                
+ The callback when an error is occurred. 
+              </li>
+      </ul>
+</div>
+</dd>
+<dt class="method" id="getLatestTempidp175024"><code>void getLatestTemp(TemperatureRetrieveCallback scb, optional ErrorCallback ecb);</code></dt>
+<dd>
+<div class="brief"><p>
+ Retrieve the latest temperature. 
+          </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">         void getLatestTemp(TemperatureRetrieveCallback scb, optional ErrorCallback ecb);</pre>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+        <li class="param">scb:
+                
+ The callback which will be invoked when a temperature is retrieved properly.
+              </li>
+        <li class="param">ecb:
+                
+ The callback when an error is occurred.
+              </li>
+      </ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dictionaries" id="dictionaries">
+<h2>Dictionary types</h2>
+<div class="dictionary" id="::OpenAPIOptions">
+<h3><code>OpenAPIOptions</code></h3>
+<div class="brief"><p>
+ The options for the open API
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">dictionary OpenAPIOptions {
+
+        DOMString ipAddress;
+};</pre>
+<div class="description">
+        <p>
+ipAddress: IP Address of the open API. 
+It should include the protocol and the port number 
+as following manner: http://127.0.0.1:3000
+        </p>
+       </div>
+</div>
+<div class="dictionary" id="::TemperatureInfo">
+<h3><code>TemperatureInfo</code></h3>
+<div class="brief"><p>
+ Temperature information.
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl"> dictionary TemperatureInfo {
+
+    Date datePublished;
+
+    double value;
+
+    DOMString unitOfMeasure;
+};</pre>
+<div class="description">
+        <p>
+datePublished: the date which a temperature is measured.
+value: the value of temperature.
+unitOfMeasure: The unit of measure. the default is celsius.
+        </p>
+       </div>
+</div>
+</div>
+<div class="callbacks" id="callbacks">
+<h2>Callbacks</h2>
+<div class="callback" id="::SensorRetrieveCallback">
+<h3><code>SensorRetrieveCallback</code></h3>
+<dd>
+<div class="brief"><p>
+ The callback which will be used to retrieve a sensor
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">callback SensorRetrieveCallback = void (Sensor sensorObj);</pre>
+<div class="synopsis">
+<h6>Signature</h6>
+<pre>void SensorRetrieveCallback(Sensor sensorObj);
+</pre>
+</div>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+      <li class="param">sensorObj:
+                
+ the sensor object which is retrieved.
+            </li>
+    </ul>
+</div>
+</dd>
+</div>
+<div class="callback" id="::SensorListRetrieveCallback">
+<h3><code>SensorListRetrieveCallback</code></h3>
+<dd>
+<div class="brief"><p>
+ The callback which will be used to retrieve sensors
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">callback SensorListRetrieveCallback = void (Sensor[] sensors);</pre>
+<div class="synopsis">
+<h6>Signature</h6>
+<pre>void SensorListRetrieveCallback(sequence &lt;
+          Sensor
+        &gt; sensors);
+</pre>
+</div>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+      <li class="param">sensors:
+                
+ the sensor list which are retrieved.
+            </li>
+    </ul>
+</div>
+</dd>
+</div>
+<div class="callback" id="::ErrorCallback">
+<h3><code>ErrorCallback</code></h3>
+<dd>
+<div class="brief"><p>
+ Generic Error Callback
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl"> callback ErrorCallback = void (Error error);</pre>
+<div class="synopsis">
+<h6>Signature</h6>
+<pre>void ErrorCallback(Error error);
+</pre>
+</div>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+      <li class="param">error:
+                
+ An error object which contains error message.
+            </li>
+    </ul>
+</div>
+</dd>
+</div>
+<div class="callback" id="::TemperatureRetrieveCallback">
+<h3><code>TemperatureRetrieveCallback</code></h3>
+<dd>
+<div class="brief"><p>
+ The callback which will be invoked when a temperature is retrieved.
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">callback TemperatureRetrieveCallback = void (TemperatureInfo info);</pre>
+<div class="synopsis">
+<h6>Signature</h6>
+<pre>void TemperatureRetrieveCallback(TemperatureInfo info);
+</pre>
+</div>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+      <li class="param">info:
+                
+ The temperature information which is retrieved
+            </li>
+    </ul>
+</div>
+</dd>
+</div>
+<div class="callback" id="::TemperatureListRetrieveCallback">
+<h3><code>TemperatureListRetrieveCallback</code></h3>
+<dd>
+<div class="brief"><p>
+ The callback which will be invoked when a series of temperatures is retrieved.
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">callback TemperatureListRetrieveCallback = void (TemperatureInfo[] list);</pre>
+<div class="synopsis">
+<h6>Signature</h6>
+<pre>void TemperatureListRetrieveCallback(sequence &lt;
+          TemperatureInfo
+        &gt; list);
+</pre>
+</div>
+<div class="parameters">
+<h6>Parameters</h6>
+<ul>
+      <li class="param">list:
+                
+ The temperature list which are retrieved.
+            </li>
+    </ul>
+</div>
+</dd>
+</div>
+</div>
+<div class="enums" id="enums">
+<h2>Enums</h2>
+<div class="enum" id="::SensorType">
+<h3><code>SensorType</code></h3>
+<div class="brief"><p>
+ The sensor type
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">enum SensorType { "thermometer" };</pre>
+<div class="description">
+        <p>
+- thermometer: a sensor measures ambient temperature.
+        </p>
+       </div>
+<div class="enumvalues">
+<h4>Values</h4>
+<dl>
+<dt class="enumvalue" id=""><code>thermometer</code></dt>
+<dd></dd>
+</dl>
+</div>
+</div>
+<div class="enum" id="::SensorMode">
+<h3><code>SensorMode</code></h3>
+<div class="brief"><p>
+ The sensor mode
+        </p></div>
+<h5>WebIDL</h5>
+<pre class="webidl">enum SensorMode { "on", "off" };</pre>
+<div class="enumvalues">
+<h4>Values</h4>
+<dl>
+<dt class="enumvalue" id=""><code>on</code></dt>
+<dd></dd>
+<dt class="enumvalue" id=""><code>off</code></dt>
+<dd></dd>
+</dl>
+</div>
+</div>
+</div>
+</div></body>
+</html>

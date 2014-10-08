@@ -31,53 +31,59 @@ var logger = {
 };
 logger.flag = 0 /* All */;
 
-var Sensors = (function () {
-    function Sensors(url) {
+var SensorsManager = (function () {
+    function SensorsManager(url) {
         this.url = url;
-        logger.i('Sensors at ' + url + ' are initialized.');
+        logger.i('The Manager of sensors at ' + url + ' is initialized.');
     }
     /**
     * \brief Get all sensors or a specific sensor with id.
     * \param callback RetrieveSensorsCallback callback = function (Sensor sensorObj or Sensor[] sensors)
     * \param id? DOMString sensorId
     */
-    Sensors.prototype.retrieve = function (callback, id) {
+    SensorsManager.prototype.retrieve = function (scb, ecb, id) {
         if (id != null) {
             this.url = this.url + '/' + id;
         }
+        try  {
+            ajaxGet(this.url, function (xhr) {
+                var jsonObj = JSON.parse(xhr.responseText);
 
-        ajaxGet(this.url, function (xhr) {
-            var jsonObj = JSON.parse(xhr.responseText);
+                if (jsonObj.sensors) {
+                    var sensorList = [];
 
-            if (jsonObj.sensors) {
-                var sensorList = [];
-
-                for (var i = 0; i < jsonObj.sensors.length; i++) {
-                    var sensor = jsonObj.sensors[i];
-                    switch (sensor.type) {
-                        case 'thermometer':
-                            var thermometer = new Thermometer(this.url, sensor.id);
-                            sensorList.push(thermometer);
-                            break;
-                        default:
-                            throw new Error('Unsupported sensor type');
-                            break;
+                    for (var i = 0; i < jsonObj.sensors.length; i++) {
+                        var sensor = jsonObj.sensors[i];
+                        switch (sensor.type) {
+                            case 'thermometer':
+                                var thermometer = new Thermometer(this.url, sensor.id);
+                                sensorList.push(thermometer);
+                                break;
+                            default:
+                                throw new Error('Unsupported sensor type');
+                                break;
+                        }
                     }
+                    logger.i('the array of sensors are returned');
+                    scb(sensorList);
+                } else if (jsonObj.sensor) {
+                    // a sensor is returned
+                    logger.i('a sensor is returned');
+                    var sensor = jsonObj.sensor;
+                    var thermometer = new Thermometer(this.url, sensor.id);
+                    scb(thermometer);
+                } else {
+                    throw new Error('Mismatched JSON type returned.');
                 }
-                logger.i('the array of sensors are returned');
-                callback(sensorList);
-            } else if (jsonObj.sensor) {
-                // a sensor is returned
-                logger.i('a sensor is returned');
-                var sensor = jsonObj.sensor;
-                var thermometer = new Thermometer(this.url, sensor.id);
-                callback(thermometer);
-            } else {
-                throw new Error('Mismatched JSON type returned.');
-            }
-        });
+            }, function (err) {
+                ecb(err);
+            });
+        } catch (error) {
+            logger.e(error);
+            ecb(error);
+        }
     };
-    return Sensors;
+    return SensorsManager;
 })();
 
 var Sensor = (function () {
@@ -95,7 +101,7 @@ var Thermometer = (function (_super) {
     function Thermometer(url, id) {
         _super.call(this, url + '/' + id, id, 'thermometer');
     }
-    Thermometer.prototype.getTempList = function (callback) {
+    Thermometer.prototype.getTempList = function (scb, ecb) {
         var url = this.url + '/temperatures';
         ajaxGet(url, function (xhr) {
             var jsonObj = JSON.parse(xhr.responseText);
@@ -107,28 +113,36 @@ var Thermometer = (function (_super) {
                 logger.i(temp.datePublished + '\t' + temp.value);
                 tempList.push(temp);
             }
-            callback(tempList);
+            scb(tempList);
+        }, function (err) {
+            logger.e(err);
+            ecb(err);
         });
     };
 
-    Thermometer.prototype.getLatestTemp = function (callback) {
+    Thermometer.prototype.getLatestTemp = function (scb, ecb) {
         var url = this.url + '/temperatures/latest';
         ajaxGet(url, function (xhr) {
             var jsonObj = JSON.parse(xhr.responseText);
             var temp = jsonObj.temperature;
             logger.i(temp.datePublished + '\t' + temp.value);
-            callback(temp);
+            scb(temp);
+        }, function (err) {
+            logger.e(err);
+            ecb(err);
         });
     };
     return Thermometer;
 })(Sensor);
 
-function ajaxGet(url, scb) {
+function ajaxGet(url, scb, ecb) {
     try  {
         this.url = url;
         var xhr = new XMLHttpRequest();
         if (!xhr) {
-            throw new Error('AJAX object is not initialized properly.');
+            var err = new Error('AJAX object is not supported.');
+            logger.e(err);
+            ecb(err);
         }
 
         xhr.onreadystatechange = function () {
@@ -136,7 +150,9 @@ function ajaxGet(url, scb) {
                 if (xhr.status === 200) {
                     scb(xhr);
                 } else {
-                    throw new Error('There was a problem with the request: ' + xhr.status);
+                    var err = new Error('Unexpected response: ' + xhr.status);
+                    logger.e(err);
+                    ecb(err);
                 }
             }
         };
@@ -145,12 +161,13 @@ function ajaxGet(url, scb) {
         xhr.send();
     } catch (error) {
         logger.e(error);
+        ecb(error);
     }
 }
 
 // Factory class for creating APIs object
-var OpenAPI = (function () {
-    function OpenAPI(options) {
+var OpenAPIManager = (function () {
+    function OpenAPIManager(options) {
         // default options
         this.options = {
             ipAddress: 'http://127.0.0.1:3000'
@@ -158,12 +175,13 @@ var OpenAPI = (function () {
         if (options && options.ipAddress) {
             this.options.ipAddress = options.ipAddress;
         }
-        this.sensors = new Sensors(this.options.ipAddress + '/api/sensors');
+        this.sensors = new SensorsManager(this.options.ipAddress + '/api/sensors');
     }
-    return OpenAPI;
+    return OpenAPIManager;
 })();
 
+// exposes API if the script is on server side.
 if (typeof module !== 'undefined') {
-    exports.openapi = new OpenAPI();
+    exports.openapi = new OpenAPIManager();
     exports.logger = logger;
 }

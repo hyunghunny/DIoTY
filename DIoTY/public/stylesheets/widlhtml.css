@@ -1,34 +1,36 @@
 body {
   padding: 2em;
   margin: 0;
-  font-family: sans-serif;
+  font-family: 'Nanum Gothic';
   color: black;
   background: white;
   background-position: top left;
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
-:link { color: #00C; background: transparent }
-:visited { color: #609; background: transparent }
-a:active { color: #C00; background: transparent }
+:link { color: #00C; background: transparent;  }
+:visited { color: #609; background: transparent;  }
+a:active { color: #C00; background: transparent;  }
 a:link img, a:visited img { border-style: none } /* no border on img links */
 
 h1, h2, h3, h4, h5, h6 { text-align: left }
 /* background should be transparent, but WebTV has a bug */
-h1, h2, h3 { color: #4599f8; background: white }
-h1 { font: bold 170% sans-serif }
-h2 { font: bold 140% sans-serif }
-h3 { font: bold 120% sans-serif }
-h4 { font: bold 100% sans-serif }
-h5 { font: italic 100% sans-serif}
-h6 { font: small-caps 100% sans-serif; margin-bottom: 0 }
+h1, h2, h3 { color: #cf6129; background: white }
+h1 { font: bold 170% }
+h2 { font: bold 140% }
+h3 { font: bold 120% }
+h4 { font: bold 110% }
+h5 { font: italic 110% }
+h6 { font: bold small-caps 110% serif; margin-bottom: 0 }
 
 .hide { display: none }
 
-code { font-size: 120% }
+code { font-size: 100%;
+       font-family: Consolas;
+}
 
 ul.toc, ol.toc, ul.authors {
-  list-style: none;
+  list-style: circle;
 }
 
 .hide { display: none }
@@ -49,8 +51,8 @@ div.exampleInner { background-color: #d5dee3;
        	           padding: 4px; margin: 0em }
 div.exampleWrapper { margin: 4px }
 div.exampleHeader { font-weight: bold; margin: 4px}
-div.term { font: 100% sans-serif; color:#000000; font-weight: bold; line-height: 60%}   
-div.list { font: 100% sans-serif; color:#000000; font-weight: normal; line-height: 60%} 
+div.term { font: 100% serif; color:#000000; font-weight: bold; line-height: 60%}   
+div.list { font: 100% serif; color:#000000; font-weight: normal; line-height: 60%} 
 
 .optional {text-decoration: line-through; display: none;}
 
@@ -67,34 +69,41 @@ ol.enumlr      { list-style-type: lower-roman; }
 ol.enumua      { list-style-type: upper-alpha; }
 ol.enumur      { list-style-type: upper-roman; }
 
-/* BONDI additions */
-
 .toc {
     list-style-type: none;
 }
 
 pre {
-  background-color:#D5DEE3;
+  background-color:#fdf2d1;
   overflow: auto;
   padding: 1em;
+  font-family: Consolas;
 }
 
 .examplecode {
-    background-color: #EEE;
+    background-color: #fdf2d1;
+    font-family: Consolas;
 }
 
-.def-api-feature-set dt, .def-api-feature dt, dt .def-device-cap, dt.const code { font: bold 100% sans-serif; }
-dt.attribute code, dt.method code { font: italic 100% sans-serif; }
+.def-api-feature-set dt, .def-api-feature dt, dt .def-device-cap, dt.const code { font: bold 100% serif; }
+dt.attribute code, dt.method code { 
+    font: italic 110% serif bold; 
+    font-family:'Lucida Console';
+    color:coral;
+}
 
 .def-device-caps dd { margin-bottom: 2em }
 
-dt.method { margin-top: 2em }
+dt.method { margin-top: 2em; font:bold; }
+.summary thead {
+    background-color: coral;
+}
 
 .summary td {
     text-align: left;
-    background-color: #BBDDDD;
+    background-color: #f3c098;
     color: inherit;
-    font-family: monospace;
+    font-family: 'Lucida Console';
     white-space:pre;
     padding: .3em 1em .3em 1em;
 }

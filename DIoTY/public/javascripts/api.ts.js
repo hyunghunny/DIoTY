@@ -19,6 +19,9 @@ var logger = {
     flag: 1 /* Critical */,
     e: function (message) {
         console.log('[ERROR] ' + message);
+        if (message.stack) {
+            console.log(message.stack);
+        }
     },
     w: function (message) {
         if (this.flag != 1 /* Critical */)
@@ -56,7 +59,7 @@ var SensorsManager = (function () {
                         var sensor = jsonObj.sensors[i];
                         switch (sensor.type) {
                             case 'thermometer':
-                                var thermometer = new Thermometer(this.url, sensor.id);
+                                var thermometer = new Thermometer(this.url, sensor);
                                 sensorList.push(thermometer);
                                 break;
                             default:
@@ -70,7 +73,7 @@ var SensorsManager = (function () {
                     // a sensor is returned
                     logger.i('a sensor is returned');
                     var sensor = jsonObj.sensor;
-                    var thermometer = new Thermometer(this.url, sensor.id);
+                    var thermometer = new Thermometer(this.url, sensor);
                     scb(thermometer);
                 } else {
                     throw new Error('Mismatched JSON type returned.');
@@ -87,19 +90,53 @@ var SensorsManager = (function () {
 })();
 
 var Sensor = (function () {
-    function Sensor(url, id, type) {
+    function Sensor(url, info) {
         this.url = url;
-        this.id = id;
-        this.type = type;
         logger.i('sensor url: ' + this.url);
+        logger.i(JSON.stringify(info));
+        this.type = info.type;
+        this.id = info.id;
+        this.status = info['switch'];
     }
+    Sensor.prototype.turnOn = function (scb, ecb) {
+        var body = '{ "switch": "on" }';
+        ajaxPut(this.url, body, function (xhr) {
+            this.status = 'on';
+            logger.i('The sensor is ' + this.status);
+
+            scb();
+        }, function (err) {
+            if (ecb) {
+                ecb(err);
+            } else {
+                logger.e(err);
+            }
+        });
+    };
+
+    Sensor.prototype.turnOff = function (scb, ecb) {
+        var body = '{ "switch": "off" }';
+
+        ajaxPut(this.url, body, function (xhr) {
+            this.status = 'off';
+            logger.i('The sensor is ' + this.status);
+
+            scb();
+        }, function (err) {
+            if (ecb) {
+                ecb(err);
+            } else {
+                logger.e(err);
+            }
+        });
+    };
     return Sensor;
 })();
 
 var Thermometer = (function (_super) {
     __extends(Thermometer, _super);
-    function Thermometer(url, id) {
-        _super.call(this, url + '/' + id, id, 'thermometer');
+    function Thermometer(url, info) {
+        _super.call(this, url + '/' + info.id, info);
     }
     Thermometer.prototype.getTempList = function (scb, ecb) {
         var url = this.url + '/temperatures';
@@ -115,8 +152,11 @@ var Thermometer = (function (_super) {
             }
             scb(tempList);
         }, function (err) {
-            logger.e(err);
-            ecb(err);
+            if (ecb) {
+                ecb(err);
+            } else {
+                logger.e(err);
+            }
         });
     };
 
@@ -128,8 +168,11 @@ var Thermometer = (function (_super) {
             logger.i(temp.datePublished + '\t' + temp.value);
             scb(temp);
         }, function (err) {
-            logger.e(err);
-            ecb(err);
+            if (ecb) {
+                ecb(err);
+            } else {
+                logger.e(err);
+            }
         });
     };
     return Thermometer;
@@ -151,16 +194,47 @@ function ajaxGet(url, scb, ecb) {
                     scb(xhr);
                 } else {
                     var err = new Error('Unexpected response: ' + xhr.status);
-                    logger.e(err);
+                    logger.w(err);
                     ecb(err);
                 }
             }
         };
-        logger.i('AJAX REQUEST: ' + url);
+        logger.i('GET REQUEST: ' + url);
         xhr.open('GET', url);
         xhr.send();
     } catch (error) {
-        logger.e(error);
+        logger.w(error);
+        ecb(error);
+    }
+}
+
+function ajaxPut(url, body, scb, ecb) {
+    try  {
+        this.url = url;
+        var xhr = new XMLHttpRequest();
+        if (!xhr) {
+            var err = new Error('AJAX object is not supported.');
+            logger.e(err);
+            ecb(err);
+        }
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 202) {
+                    scb(xhr);
+                } else {
+                    var err = new Error('Unexpected response: ' + xhr.status);
+                    logger.w(err);
+                    ecb(err);
+                }
+            }
+        };
+        logger.i('PUT REQUEST: ' + url);
+        xhr.open('PUT', url);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(body);
+    } catch (error) {
+        logger.w(error);
         ecb(error);
     }
 }
@@ -180,8 +254,130 @@ var OpenAPIManager = (function () {
     return OpenAPIManager;
 })();
 
+// Open API discovery in nearby devices class
+var OpenAPIFinder = (function () {
+    function OpenAPIFinder() {
+        this.classA = 0;
+        this.classB = 0;
+        this.classC = 0;
+        this.portNumber = 3000;
+        this.gatewayFlag = false;
+    }
+    OpenAPIFinder.prototype.setGateway = function (gatewayAddress, portNumber) {
+        // validate gatewayAddress. it should be ###.###.###.1
+        if (this.checkGateway(gatewayAddress)) {
+            logger.i('Open API finder will search devices in ' + gatewayAddress + ':' + portNumber);
+            this.portNumber = portNumber;
+            this.gatewayFlag = true;
+        } else {
+            this.gatewayFlag = false;
+        }
+        return this.gatewayFlag;
+    };
+
+    OpenAPIFinder.prototype.checkGateway = function (ip) {
+        var x = ip.split("."), x1, x2, x3, x4;
+
+        logger.i(ip + ' -> ' + x[0] + x[1] + x[2] + x[3]);
+
+        if (x.length == 4) {
+            x1 = parseInt(x[0], 10);
+            x2 = parseInt(x[1], 10);
+            x3 = parseInt(x[2], 10);
+            x4 = parseInt(x[3], 10);
+
+            if (isNaN(x1) || isNaN(x2) || isNaN(x3) || isNaN(x4)) {
+                logger.e('non numeric string input');
+                return false;
+            }
+
+            if ((x1 >= 0 && x1 <= 255) && (x2 >= 0 && x2 <= 255) && (x3 >= 0 && x3 <= 255) && (x4 == 1)) {
+                this.classA = x1;
+                this.classB = x2;
+                this.classC = x3;
+                return true;
+            }
+        }
+        return false;
+    };
+    OpenAPIFinder.prototype.find = function (scb, ecb) {
+        if (this.gatewayFlag == false) {
+            ecb(new Error('gateway address is not set yet.'));
+            return;
+        }
+
+        var nearbySensors = [];
+        var prefix = 'http://' + this.classA + '.' + this.classB + '.' + this.classC + '.';
+        var postfix = ':' + this.portNumber;
+
+        /*
+        retrieveAsync(prefix, postfix, nearbySensors, function (list) {
+        if (list.length > 0) {
+        scb(list);
+        } else {
+        ecb(new Error('No devices found!'));
+        }
+        });
+        */
+        retrieveSync(prefix, 2, postfix, nearbySensors, function (list) {
+            if (list.length > 0) {
+                scb(list);
+            } else {
+                ecb(new Error('No devices found!'));
+            }
+        });
+    };
+    return OpenAPIFinder;
+})();
+
+function retrieveSync(prefix, i, postfix, list, cb) {
+    var candidate = new OpenAPIManager({ ipAddress: prefix + i + postfix });
+    candidate.sensors.retrieve(function (sensors) {
+        for (var j = 0; j < sensors.length; j++) {
+            logger.i(sensors[j].url + ' is available in the local network.');
+            list.push(sensors[j].url);
+        }
+        i++;
+        if (i <= 255) {
+            retrieveSync(prefix, i, postfix, list, cb);
+        } else {
+            cb(list);
+        }
+    }, function (err) {
+        i++;
+        if (i <= 255) {
+            retrieveSync(prefix, i, postfix, list, cb);
+        } else {
+            cb(list);
+        }
+    });
+}
+
+var errorCount = 0;
+var errorLimit = 10;
+var cbFlag = false;
+function retrieveAsync(prefix, postfix, list, cb) {
+    for (var i = 2; i <= 255; i++) {
+        var candidate = new OpenAPIManager({ ipAddress: prefix + i + postfix });
+        candidate.sensors.retrieve(function (sensors) {
+            for (var j = 0; j < sensors.length; j++) {
+                logger.i(sensors[j].url + ' is available in the local network.');
+                list.push(sensors[j].url);
+            }
+        }, function (err) {
+            logger.w('Error count is ' + errorCount);
+            errorCount++;
+            if (errorCount > errorLimit && cbFlag == false) {
+                cb(list);
+                cbFlag = true;
+            }
+        });
+    }
+}
+
 // exposes API if the script is on server side.
 if (typeof module !== 'undefined') {
-    exports.openapi = new OpenAPIManager();
+    exports.myapi = new OpenAPIManager();
     exports.logger = logger;
+    exports.finder = new OpenAPIFinder();
 }

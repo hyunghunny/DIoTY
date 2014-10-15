@@ -83,14 +83,23 @@ router.put('/sensors/:id', function (req, res) {
             throw new Error('406');
         }
         sensorObj.switch = sensorModified.switch;
-        
+        var turnOn = false;
         if (sensorObj.switch == 'on') {          
-            model.serialToDb(true);
+            turnOn = true;
         } else {
-            model.serialToDb(false);
+            turnOn = false;
         }
-        res.sendStatus(202);
+        model.serialToDb(turnOn, function (result) {
+            console.log('reading serial is ' + result);
+            if (result == false) {                
+                res.sendStatus(500);
+            } else {
+                res.sendStatus(202);
+            }
+        });
+        
     } catch (err) {
+        console.log(err.message);
         res.sendStatus(err.message);
     }    
 });

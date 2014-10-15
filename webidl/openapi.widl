@@ -1,0 +1,238 @@
+
+/**
+ * \brief The options for the open API
+ * 
+ *   ipAddress: IP Address of the open API. 
+ *     It should include the protocol and the port number 
+ *     as following manner: http://127.0.0.1:3000
+ */
+dictionary OpenAPIOptions {
+
+	DOMString ipAddress;
+};
+
+[Constructor(OpenAPIOptions options)]
+/**
+ * \brief Open API entry point. 
+ *
+ *    You can invoke this API both client side and server side (with Node.js).
+ *
+ *    If you want to use this API in the server side, you SHOULD invoke 
+ *    require('./api.ts.js') function and use myapi attribute instead of object instantiation.
+ *
+ *    See the following sample code for your information.  
+ *
+ * \code
+ * // invoke API in the server side (Node.js). you SHOULD locate api.ts.js at the same folder.
+ * var myapi = require('./api.ts.js').myapi; 
+ * 
+ * // invoke API in the client side. you SHOULD include api.ts.js first.
+ * var myapi = new OpenAPIManager();
+ * \endcode
+ */
+interface OpenAPIManager {
+	/**
+	 * \brief The sensors which can be retrieved in this open API.
+	 */
+	attribute SensorsManager sensors;
+
+	/**
+	 * \brief The default options of open API.
+	 */
+	attribute OpenAPIOptions options;
+};
+
+
+/**
+ * \brief The callback which will be used to retrieve a sensor
+ * \param sensorObj the sensor object which is retrieved.
+ */
+callback SensorRetrieveCallback = void (Sensor sensorObj);
+
+/**
+ * \brief The callback which will be used to retrieve sensors
+ * \param sensors the sensor list which are retrieved.
+ */ 
+callback SensorListRetrieveCallback = void (Sensor[] sensors);
+
+/**
+ * \brief Generic Success Callback
+ */
+ callback SuccessCallback = void ();
+
+/**
+ * \brief Generic Error Callback
+ * \param error An error object which contains error message.
+ */
+ callback ErrorCallback = void (Error error);
+
+[Constructor(DOMString url)]
+/**
+ * \brief Sensors Manager interface
+ *
+ * \code
+ * if (typeof module !== 'undefined') {
+ *   // script on server side
+ *   myapi = require('./api.ts.js').myapi;
+ *    logger = require('./api.ts.js').logger;    
+ * } else {
+ *   // script on client side
+ *  myapi = new OpenAPI();
+ * }
+ * myapi.sensors.retrieve(function (sensors) {
+ *   console.log('sensors are successfully retrieved.');
+ *
+ * });
+ * \endcode
+ */
+interface SensorsManager {
+	/**
+	 * \brief Retrieves all available sensors attached.
+	 * If id parameter is passed, it will retrieve a specific sensor with id value
+	 *
+	 * \param scb The callback when available sensors are retrieved successfully.
+	 * \param ecb The callback when an error is occurred. 
+	 * \param id The ID of a sensor to be retrieved.	 
+	 */
+	void retrieve(SensorListRetrieveCallback scb, optional ErrorCallback ecb, optional DOMString id);
+
+};
+
+/**
+ * \brief The sensor type
+ * 
+ */
+enum SensorType { 
+	/**
+	 * The type of sensors which measures ambient temperature.
+	 */
+	"thermometer"
+};
+
+/**
+ * \brief The sensor mode
+ */
+enum SensorMode { 
+	/**
+	 * This indicate that this sensor is on now.
+	 */
+	"on",
+	/**
+	 * This indicate that this sensor is off now.
+	 */	 
+	"off" 
+};
+
+[Constructor(DOMString url, DOMString id, SensorType type)]
+/**
+ * \brief The abstract interface of a sensor.
+ */
+interface Sensor {
+	/**
+	 * \brief The identification of this sensor
+	 */
+	attribute DOMString id;
+
+	/**
+	 * \brief The type of this sensor
+	 */
+	attribute SensorType type;
+
+	/**
+	 * \brief the on-off status of this sensor
+	 */
+	attribute SensorMode status;
+
+	/**
+	 * \brief Turn on the sensor
+	 *
+	 * \param scb The callback which will be invoked when the list is retrieved properly.
+	 * \param ecb The callback when an error is occurred. 
+	 */
+	 void turnOn(SuccessCallback scb, optional ErrorCallback ecb);
+
+	/**
+	 * \brief Turn off the sensor
+	 *
+	 * \param scb The callback which will be invoked when the list is retrieved properly.
+	 * \param ecb The callback when an error is occurred. 
+	 */
+	 void turnOff(SuccessCallback scb, optional ErrorCallback ecb);	 
+};
+
+/**
+ * \brief Temperature information.
+ * 
+ *   datePublished: the date which a temperature is measured.
+ *   value: the value of temperature.
+ *   unitOfMeasure: The unit of measure. the default is celsius.
+ */
+ dictionary TemperatureInfo {
+
+    Date datePublished;
+
+    double value;
+
+    DOMString unitOfMeasure;
+};
+
+/**
+ * \brief The callback which will be invoked when a temperature is retrieved.
+ * \param info The temperature information which is retrieved
+ */
+callback TemperatureRetrieveCallback = void (TemperatureInfo info);
+
+/**
+ * \brief The callback which will be invoked when a series of temperatures is retrieved.
+ * \param list The temperature list which are retrieved.
+ */
+callback TemperatureListRetrieveCallback = void (TemperatureInfo[] list);
+
+
+[Constructor(DOMString url, DOMString id)]
+/**
+ * \brief The interface of a theremeter sensor.
+ *
+ * \code
+ *  // Sample code for how to retrieve temperatures with a thermometer
+ * myapi.sensors.retrieve(function (sensors) {
+ *    logger.i('sensors are successfully retrieved.');
+ *
+ *    // returns the list
+ *    for (var i = 0; i < sensors.length; i++) {
+ *        logger.i('number of sensors: ' + sensors.length);
+ *        logger.i(sensors[i].id);
+ *        var sensor = sensors[i];
+ *        sensor.turnOn(function() { // turn on the sensor
+ *            logger.i(JSON.stringify(sensor));
+ *            if (sensor.type == 'thermometer') {
+ *                sensor.getTempList(function (list) {
+ *                    logger.i(list.length + ' temperatures are retrieved properly.');
+ *                });
+ *                sensor.getLatestTemp(function (temp) {
+ *                    logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+ *                }); 
+ *            }
+ *        });
+ *    }   
+ * }, function (err) {
+ *     logger.e('Unable to retrieve sensors due to ' + err);
+ * }) 
+ * \endcode
+ */
+interface Thermometer : Sensor {
+	
+	/**
+	 * \brief Retrieve all the temperatures. 
+	 * \param scb The callback which will be invoked when the list is retrieved properly.
+	 * \param ecb The callback when an error is occurred. 
+	 */
+	 void getTempList(TemperatureListRetrieveCallback scb, optional ErrorCallback ecb); 
+
+	/**
+	 * \brief Retrieve the latest temperature. 
+	 * \param scb The callback which will be invoked when a temperature is retrieved properly.
+	 * \param ecb The callback when an error is occurred.
+	 */
+	 void getLatestTemp(TemperatureRetrieveCallback scb, optional ErrorCallback ecb); 
+};

@@ -1,30 +1,35 @@
 if (typeof module !== 'undefined') {
     // script on server side
-    openapi = require('./api.ts.js').openapi;
-    logger = require('./api.ts.js').logger;    
+    myapi = require('./api.ts.js').myapi;
+    logger = require('./api.ts.js').logger;
+    finder = require('./api.ts.js').finder;    
 } else {
     // script on client side
-    openapi = new OpenAPIManager();
+    myapi = new OpenAPIManager();
 }
 
  // Sample code for how to retrieve temperatures with a thermometer
-openapi.sensors.retrieve(function (sensors) {
-    logger.i('sensors are successfully retrieved.');
+myapi.sensors.retrieve(function (sensors) {
+    console.log('sensors are successfully retrieved.');
 
     // returns the list
     for (var i = 0; i < sensors.length; i++) {
-        logger.i('number of sensors: ' + sensors.length);
-        logger.i(sensors[i].id);
-        if (sensors[i].type == 'thermometer') {
-            sensors[i].getTempList(function (list) {
-                logger.i(list.length + ' temperatures are retrieved properly.');
-            });
-            sensors[i].getLatestTemp(function (temp) {
-                logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
-            }); 
-        }
+        console.log('number of sensors: ' + sensors.length);
+        console.log(sensors[i].id);
+        var sensor = sensors[i];
+        sensor.turnOn(function() {
+            logger.i(JSON.stringify(sensor));
+            if (sensor.type == 'thermometer') {
+                sensor.getTempList(function (list) {
+                    console.log(list.length + ' temperatures are retrieved properly.');
+                });
+                sensor.getLatestTemp(function (temp) {
+                    console.log('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+                }); 
+            }
+        });
     }   
 }, function (err) {
-    logger.e('Unable to retrieve sensors due to ' + err);
+    console.log('Unable to retrieve sensors due to ' + err);
 })   
 

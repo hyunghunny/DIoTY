@@ -48,32 +48,31 @@ connection.connect(function (err) {
     console.log("database connected successfully");
 });
 
+exports.serialToDb = function (on, cb) {
 
-
-exports.serialToDb = function (on) {
-    try {
-        if (on) {
-            
-            if (recording == "yet") {
-                sp.open(function (err) {
-                    if (err) {
-                        // XXX: check if the opened port is reopened.
-                        console.log("serial port open fails : " + err.message);
-                        throw err;
-                    }
+    if (on) {            
+        if (recording == "yet") {
+            sp.open(function (err) {
+                if (err) {
+                    // XXX: check if the opened port is reopened.
+                    console.log("serial port open fails : " + err.message);
+                    cb(false);
+                } else {
                     recording = "on";
-
-                });
-            }
-        } else {
-            // stop to write temperatures into database 
-            recording = "off";
-
+                    cb(true);
+                }
+            });
+        } else if (recording == "off") {
+            recording = "on";
+            cb(true);
         }
-    } catch (err) {
-        console.log("serial handling error : " + err.message);
-        throw new Error('500');
+    } else {
+        // stop to write temperatures into database 
+        recording = "off";
+        cb(true);
+
     }
+
 
 };
 

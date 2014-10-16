@@ -134,26 +134,22 @@ function setTempAndDraw() {
 		draw();
 	}
 }
-
+// Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
 myapi.sensors.retrieve(function (sensors) {
     logger.i('sensors are successfully retrieved.');
-    
-    // returns the list
-    for (var i = 0; i < sensors.length; i++) {
-        logger.i('number of sensors: ' + sensors.length);
-        logger.i(sensors[i].id);
-        if (sensors[i].type == 'thermometer') {
+    logger.i('number of sensors: ' + sensors.length);
 
-            sensors[i].getLatestTemp(function (temp) {
-                logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
-                tempDiv = document.getElementById('temp');
-                tempDiv.value = temp.value;
-                slider = document.getElementById('defaultSlider');
-                slider.value = temp.value;
-                draw();
+    if (sensors.length > 0 && sensors[0].type == 'thermometer') {
+        // show the 1st thermometer's latest temperature
+        sensors[0].getLatestTemp(function (temp) {
+            logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+            tempDiv = document.getElementById('temp');
+            tempDiv.value = temp.value;
+            slider = document.getElementById('defaultSlider');
+            slider.value = temp.value;
+            draw();
 
-            });
-        }
+        });
     }
 })

@@ -9,15 +9,13 @@ if (typeof module !== 'undefined') {
     finder = new OpenAPIFinder();
 }
 //logger.flag = 1;
-if (finder.setGateway('192.168.11.1', 3000)) {
-    finder.find(function (list) {
-        console.log('The number of sensors is ' + list.length);
-        for (var i = 0; i < list.length; i++) {
-            console.log(list[i]);
-        }
-    }, function (err) {
-        console.log(err);
-    })
-} else {
-    logger.e('gateway setting fail');
-}
+
+finder.findSensors('192.168.11.*', function (list) {
+    console.log('The number of sensors is ' + list.length);
+    for (var i = 0; i < list.length; i++) {
+        console.log(list[i].id);
+    }
+    console.log("total sensors: " + finder.nearbySensors.length);
+}, function (err) {
+    console.log(err);
+});

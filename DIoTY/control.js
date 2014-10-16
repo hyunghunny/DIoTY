@@ -48,9 +48,9 @@ connection.connect(function (err) {
     console.log("database connected successfully");
 });
 
-exports.serialToDb = function (on, cb) {
+exports.serialToDb = function (mode, cb) {
 
-    if (on) {            
+    if (mode == 'on') {            
         if (recording == "yet") {
             sp.open(function (err) {
                 if (err) {

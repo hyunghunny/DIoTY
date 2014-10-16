@@ -59,7 +59,7 @@ router.get('/sensors/:id', function (req, res) {
 });
 
 // Get data base manipulation module.
-var model = require('../model');
+var controller = require('../control');
 
 /* PUT api/sensors/:id  */
 router.put('/sensors/:id', function (req, res) {
@@ -82,18 +82,14 @@ router.put('/sensors/:id', function (req, res) {
             // throw 406 Not Acceptable
             throw new Error('406');
         }
-        sensorObj.switch = sensorModified.switch;
-        var turnOn = false;
-        if (sensorObj.switch == 'on') {          
-            turnOn = true;
-        } else {
-            turnOn = false;
-        }
-        model.serialToDb(turnOn, function (result) {
+
+        controller.serialToDb(sensorModified.switch, function (result) {
             console.log('reading serial is ' + result);
-            if (result == false) {                
+            if (result == false) {
+                sensorObj.switch = 'off';                
                 res.sendStatus(500);
             } else {
+                sensorObj.switch = sensorModified.switch;
                 res.sendStatus(202);
             }
         });
@@ -115,7 +111,7 @@ router.get('/sensors/:id/temperatures', function (req, res) {
         if (sensorObj == null) {
             throw new Error('404');
         }
-        var tempList = model.getTemperatureList(function (tempList) {           
+        var tempList = controller.getTemperatureList(function (tempList) {           
             var temps = {
                 temperatures: tempList
             };
@@ -141,7 +137,7 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
         if (sensorObj == null) {
             throw new Error('404');
         }
-        var tempList = model.getLatestTemperature(function (temp) {
+        var tempList = controller.getLatestTemperature(function (temp) {
             var tempObj = {
                 temperature: temp
             };

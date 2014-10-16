@@ -19,7 +19,7 @@
     <Content Include="package.json" />
     <Compile Include="app.js" />
     <Compile Include="dateformat.js" />
-    <Compile Include="model.js" />
+    <Compile Include="control.js" />
     <Content Include="iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />
     <Content Include="iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
     <Content Include="iisnode\index.html" />
@@ -36,7 +36,7 @@
     <Content Include="obj\Debug\package.json" />
     <Compile Include="obj\Debug\app.js" />
     <Compile Include="obj\Debug\dateformat.js" />
-    <Compile Include="obj\Debug\model.js" />
+    <Compile Include="obj\Debug\control.js" />
     <Content Include="obj\Debug\iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />
     <Content Include="obj\Debug\iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
     <Content Include="obj\Debug\iisnode\index.html" />

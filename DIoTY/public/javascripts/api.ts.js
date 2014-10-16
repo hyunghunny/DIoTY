@@ -261,91 +261,110 @@ var OpenAPIFinder = (function () {
         this.classB = 0;
         this.classC = 0;
         this.portNumber = 3000;
-        this.gatewayFlag = false;
+        this.nearbySensors = [];
     }
-    OpenAPIFinder.prototype.setGateway = function (gatewayAddress, portNumber) {
-        // validate gatewayAddress. it should be ###.###.###.1
-        if (this.checkGateway(gatewayAddress)) {
-            logger.i('Open API finder will search devices in ' + gatewayAddress + ':' + portNumber);
-            this.portNumber = portNumber;
-            this.gatewayFlag = true;
-        } else {
-            this.gatewayFlag = false;
-        }
-        return this.gatewayFlag;
-    };
-
-    OpenAPIFinder.prototype.checkGateway = function (ip) {
+    OpenAPIFinder.prototype.checkAddress = function (ip) {
         var x = ip.split("."), x1, x2, x3, x4;
-
-        logger.i(ip + ' -> ' + x[0] + x[1] + x[2] + x[3]);
 
         if (x.length == 4) {
             x1 = parseInt(x[0], 10);
             x2 = parseInt(x[1], 10);
             x3 = parseInt(x[2], 10);
-            x4 = parseInt(x[3], 10);
+            x4 = x[3];
 
-            if (isNaN(x1) || isNaN(x2) || isNaN(x3) || isNaN(x4)) {
+            if (isNaN(x1) || isNaN(x2) || isNaN(x3)) {
                 logger.e('non numeric string input');
-                return false;
+                return 'invaild';
             }
 
-            if ((x1 >= 0 && x1 <= 255) && (x2 >= 0 && x2 <= 255) && (x3 >= 0 && x3 <= 255) && (x4 == 1)) {
+            if ((x1 >= 0 && x1 <= 255) && (x2 >= 0 && x2 <= 255) && (x3 >= 0 && x3 <= 255) && (x4 == '*')) {
                 this.classA = x1;
                 this.classB = x2;
                 this.classC = x3;
-                return true;
+                logger.i('retrieving submask: ' + ip);
+                return 'range';
+            } else if (parseInt(x4) >= 0 && parseInt(x4) <= 255) {
+                return 'single';
             }
-        }
-        return false;
-    };
-    OpenAPIFinder.prototype.find = function (scb, ecb) {
-        if (this.gatewayFlag == false) {
-            ecb(new Error('gateway address is not set yet.'));
-            return;
-        }
-
-        var nearbySensors = [];
-        var prefix = 'http://' + this.classA + '.' + this.classB + '.' + this.classC + '.';
-        var postfix = ':' + this.portNumber;
-
-        /*
-        retrieveAsync(prefix, postfix, nearbySensors, function (list) {
-        if (list.length > 0) {
-        scb(list);
         } else {
-        ecb(new Error('No devices found!'));
+            logger.e('invalid ip address');
+            return 'invalid';
         }
-        });
-        */
-        retrieveSync(prefix, 2, postfix, nearbySensors, function (list) {
-            if (list.length > 0) {
+    };
+
+    OpenAPIFinder.prototype.findSensors = function (address, scb, ecb) {
+        switch (this.checkAddress(address)) {
+            case 'range':
+                var prefix = 'http://' + this.classA + '.' + this.classB + '.' + this.classC + '.';
+                var postfix = ':' + this.portNumber;
+
+                /*
+                // XXX:below code doesn't work properly.
+                retrieveAsync(prefix, postfix, this.nearbySensors, function (list) {
+                if (list.length > 0) {
                 scb(list);
-            } else {
+                } else {
                 ecb(new Error('No devices found!'));
-            }
-        });
+                }
+                });
+                */
+                //XXX:below code works but it takes too long time :(
+                logger.i('start to retrieve sensors...');
+                retrieveSync(prefix, 2, postfix, this.nearbySensors, function (list) {
+                    if (list.length > 0) {
+                        scb(list);
+                    } else {
+                        ecb(new Error('No devices found!'));
+                    }
+                });
+                break;
+
+            case 'single':
+                var candidate = new OpenAPIManager({ ipAddress: 'http://' + address + ':' + this.portNumber });
+                candidate.sensors.retrieve(function (sensors) {
+                    for (var j = 0; j < sensors.length; j++) {
+                        logger.i(sensors[j].url + ' is available in the local network.');
+                        this.nearbySensors.push(sensors[j]);
+                    }
+                    scb(this.nearbySensors);
+                }, function (err) {
+                    if (ecb) {
+                        ecb(err);
+                    } else {
+                        logger.e(err);
+                    }
+                });
+                break;
+
+            default:
+                var err = new Error('invalid IP address');
+                if (ecb) {
+                    ecb(err);
+                } else {
+                    logger.e(err);
+                }
+                break;
+        }
     };
     return OpenAPIFinder;
 })();
-
+var findLimit = 10;
 function retrieveSync(prefix, i, postfix, list, cb) {
     var candidate = new OpenAPIManager({ ipAddress: prefix + i + postfix });
     candidate.sensors.retrieve(function (sensors) {
         for (var j = 0; j < sensors.length; j++) {
             logger.i(sensors[j].url + ' is available in the local network.');
-            list.push(sensors[j].url);
+            list.push(sensors[j]);
         }
         i++;
-        if (i <= 255) {
+        if (i <= findLimit) {
             retrieveSync(prefix, i, postfix, list, cb);
         } else {
             cb(list);
         }
     }, function (err) {
         i++;
-        if (i <= 255) {
+        if (i <= findLimit) {
             retrieveSync(prefix, i, postfix, list, cb);
         } else {
             cb(list);
@@ -357,21 +376,26 @@ var errorCount = 0;
 var errorLimit = 10;
 var cbFlag = false;
 function retrieveAsync(prefix, postfix, list, cb) {
-    for (var i = 2; i <= 255; i++) {
-        var candidate = new OpenAPIManager({ ipAddress: prefix + i + postfix });
-        candidate.sensors.retrieve(function (sensors) {
-            for (var j = 0; j < sensors.length; j++) {
-                logger.i(sensors[j].url + ' is available in the local network.');
-                list.push(sensors[j].url);
-            }
-        }, function (err) {
-            logger.w('Error count is ' + errorCount);
-            errorCount++;
-            if (errorCount > errorLimit && cbFlag == false) {
-                cb(list);
-                cbFlag = true;
-            }
-        });
+    for (var i = 2; i <= findLimit; i++) {
+        var retrieveOne = function (i) {
+            var candidate = new OpenAPIManager({ ipAddress: prefix + i + postfix });
+            candidate.sensors.retrieve(function (sensors) {
+                for (var j = 0; j < sensors.length; j++) {
+                    // XXX: the url which has been searched is wrong.
+                    logger.i(sensors[j].url + ' is available in the local network.');
+                    list.push(sensors[j]);
+                }
+            }, function (err) {
+                logger.w('Error count is ' + errorCount);
+                errorCount++;
+                if (errorCount > errorLimit && cbFlag == false) {
+                    cb(list);
+                    cbFlag = true;
+                }
+            });
+        };
+
+        retrieveOne(i);
     }
 }
 

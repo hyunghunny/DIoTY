@@ -136,20 +136,43 @@ function setTempAndDraw() {
 }
 // Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
+var mySensor;
 myapi.sensors.retrieve(function (sensors) {
     logger.i('sensors are successfully retrieved.');
     logger.i('number of sensors: ' + sensors.length);
-
+    
     if (sensors.length > 0 && sensors[0].type == 'thermometer') {
         // show the 1st thermometer's latest temperature
-        sensors[0].getLatestTemp(function (temp) {
-            logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
-            tempDiv = document.getElementById('temp');
-            tempDiv.value = temp.value;
-            slider = document.getElementById('defaultSlider');
-            slider.value = temp.value;
-            draw();
-
+        mySensor = sensors[0];
+        turnOnSensor(mySensor, function () {
+            // update UI per 5 secs
+            setInterval(function () {
+                console.log('update event fired');
+                getLatestTemperature(mySensor);
+            }, 5000);
         });
     }
-})
+});
+
+function turnOnSensor(sensor, cb) {
+    if (sensor.status === 'off') {
+        sensor.turnOn(function () {
+            cb();
+        }, function (err) {
+            cb();
+        });
+    }
+}
+
+function getLatestTemperature(sensor) {
+    sensor.getLatestTemp(function (temp) {
+        logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
+        timeWidgetDiv = document.getElementById('timeWidget');
+        timeWidgetDiv.innerHTML = new Date(temp.datePublished).toLocaleString();
+        tempDiv = document.getElementById('temp');
+        tempDiv.value = temp.value;
+        slider = document.getElementById('defaultSlider');
+        slider.value = temp.value;
+        draw();
+    });
+}

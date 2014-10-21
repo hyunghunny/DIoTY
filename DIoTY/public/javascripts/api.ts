@@ -142,6 +142,7 @@ class Thermometer extends Sensor {
             logger.i('The number of temperatures: ' + temps.length);
             for (var i = 0; i < temps.length ; i++) {
                 var temp = temps[i];
+                temp.datePublished = new Date(temp.datePublished);
                 logger.i(temp.datePublished + '\t' + temp.value);
                 tempList.push(temp);
             }
@@ -161,6 +162,7 @@ class Thermometer extends Sensor {
         ajaxGet(url, function (xhr) {
             var jsonObj = JSON.parse(xhr.responseText);
             var temp = jsonObj.temperature;
+            temp.datePublished = new Date(temp.datePublished);
             logger.i(temp.datePublished + '\t' + temp.value);
             scb(temp);
         }, function (err) {
@@ -254,7 +256,7 @@ class OpenAPIManager {
     constructor(options?:OpenAPIOptions) {
         // default options
         this.options = {
-            ipAddress: 'http://127.0.0.1:3000'
+            ipAddress: '' //'http://127.0.0.1:3000'
         }
         if (options && options.ipAddress) {
             this.options.ipAddress = options.ipAddress;

@@ -1,0 +1,18 @@
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='/javascripts/api.ts.js')
+		script(src='/javascripts/thermometer.js')
+	body(onload='draw();')
+		div
+			canvas#thermometer(width='200' height='900')
+		div(style='position: absolute; top: 50px; left: 350px;')
+			form#drawTemp
+				div#timeWidget(style='font-size: 300%')
+				input#temp(type='text' name='temp' value='-30' maxlength='3')
+				br
+				input#defaultSlider(type='range' min='-30' max='50' onchange='setTempAndDraw();' )
+				br
+				input(type='button' value='Draw' onclick='draw();')

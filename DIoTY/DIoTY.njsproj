@@ -23,9 +23,11 @@
     <Content Include="iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />
     <Content Include="iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
     <Content Include="iisnode\index.html" />
+    <Compile Include="public\javascripts\gchart.js" />
     <Compile Include="routes\api.js" />
     <Compile Include="routes\index.js" />
     <Content Include="tests\mysql_schema.txt" />
+    <Compile Include="routes\trends.js" />
     <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />
     <Compile Include="tests\write_db.js" />
@@ -50,11 +52,11 @@
     <Content Include="obj\Debug\views\index.jade" />
     <Content Include="obj\Debug\views\layout.jade" />
     <Content Include="obj\Debug\public\images\thermometer-template.png" />
-    <Compile Include="obj\Debug\public\javascripts\thermometer.js" />
     <Content Include="obj\Debug\public\stylesheets\style.css" />
     <Content Include="public\images\thermometer-template.png" />
     <Compile Include="public\javascripts\thermometer.js" />
     <Content Include="public\stylesheets\style.css" />
+    <Content Include="views\trends.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin" />

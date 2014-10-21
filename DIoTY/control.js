@@ -26,7 +26,7 @@ sp.on('open', function () {
     sp.on('data', function (data) {
 
         var temp = new String(data).trim();
-        var dateString = df.dateFormat(new Date(), "yyyy-mm-dd hh:MM:ss");
+        var dateString = df.dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss");
         if (recording == "on") {
             // write a temperature into DB  
             connection.query('insert into tempData(tempDate, tempCelsius) values(?, ?)',

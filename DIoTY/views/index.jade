@@ -1,5 +1,24 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    img(src='/images/cover.jpg')  
+    h1= title
+    hr
+    p Welcome to #{title}!
+    p
+        | This is a deliverable which has been created within the simple IoT developing activity of AppIn seminar.
+        | AppIn seminar is provided by AppCenter and Daddy's Lab for understanding IoT easily.
+    p For more details, please visit to:
+    a(href='http://webofthink.tistory.com') Web of Think
+    p This version supports following features:
+        ul
+            li For users:
+                ul
+                    li: a(href='/my-thermometer') My Thermometer
+                    li: a(href='/trends') My Temperature Trends
+            li For developers:
+                ul
+                    li: a(href='/openapi.html') Do IoT Yourself API documentation
+                    li: a(href='/javascripts/api.ts.js') API implementation (JavaScript version)
+                    li: a(href='/javascripts/api.ts') API implementation (TypeScript version)
+          

@@ -31,6 +31,7 @@
     <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />
     <Compile Include="tests\write_db.js" />
+    <Content Include="views\basic.jade" />
     <Content Include="views\error.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />

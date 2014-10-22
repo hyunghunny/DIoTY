@@ -162,6 +162,7 @@ function turnOnSensor(sensor, cb) {
             cb();
         });
     }
+    cb();
 }
 
 function getLatestTemperature(sensor) {

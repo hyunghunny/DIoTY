@@ -1,8 +1,47 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.jumbotron {
+    background-image: url(../images/cover.jpg);
+    background-position: 0% 25%;
+    background-size: auto; 
+    background-repeat: no-repeat;
+    color: #808080;
+}
+
+.jumbotron h1 {
+    color:#033a70;
+    text-shadow: #808080 0.1em 0.1em 0.1em;
+}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+#loading {
+    position:absolute;
+    top:50%; 
+    left:50%;
+    overflow:hidden;
+    vertical-align:middle;
 }

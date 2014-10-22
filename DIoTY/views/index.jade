@@ -1,24 +1,48 @@
 extends layout
 
 block content
-    img(src='/images/cover.jpg')  
-    h1= title
-    hr
-    p Welcome to #{title}!
-    p
-        | This is a deliverable which has been created within the simple IoT developing activity of AppIn seminar.
-        | AppIn seminar is provided by AppCenter and Daddy's Lab for understanding IoT easily.
-    p For more details, please visit to:
-    a(href='http://webofthink.tistory.com') Web of Think
-    p This version supports following features:
-        ul
-            li For users:
-                ul
-                    li: a(href='/my-thermometer') My Thermometer
-                    li: a(href='/trends') My Temperature Trends
-            li For developers:
-                ul
-                    li: a(href='/openapi.html') Do IoT Yourself API documentation
-                    li: a(href='/javascripts/api.ts.js') API implementation (JavaScript version)
-                    li: a(href='/javascripts/api.ts') API implementation (TypeScript version)
-          
+    div.jumbotron
+        div.container  
+            h1 #{title}
+            p
+                br
+            p Self-developing IoT services using open source technologies.
+            p For more details, please visit to:
+            p
+                a.btn.btn-primary.btn-lg(href='http://webofthink.tistory.com') Web of Think
+    div.container
+        p
+            | This is a deliverable which has been created within the simple IoT developing activity of AppIn seminar.
+            | AppIn seminar is designed and provided by AppCenter and Daddy's Lab for newbies to understand IoT easily.        
+        p This version currently supports the following features:
+        div.row
+            div.col-lg-4
+                h2 My Thermometer
+                p It shows the current temperature which will be updated at every 5 secs.
+                p
+                    a.btn.btn-default(href='/my-thermometer') Go >>
+            div.col-lg-4
+                h2 My Temperature Trends
+                p It shows the all temperatures which have been measured until now.
+                p
+                    a.btn.btn-default(href='/trends') Go >>
+            div.col-lg-4
+                h2 JavaScript API documentation
+                p It shows how to use the open API to control thermometer sensor(s). 
+                p
+                    a.btn.btn-default(href='/openapi.html') See details >>
+            div.col-lg-4
+                h2 API implementation (JavaScript version)
+                p You can use the JavaScript API with this implementation.
+                p
+                    a.btn.btn-default(href='/javascripts/api.ts.js') Download >>
+            div.col-lg-4
+                h2 API implementation (TypeScript version)
+                p You can use the TypeScript API with this implementation.
+                p
+                    a.btn.btn-default(href='/javascripts/api.ts') Download >>
+        hr
+        footer Copyright (C) Daddy's Lab. This work is licensed under version 3.0 of the Creative Commons CC-BY license.
+    script(src='javascripts/jquery.js')
+    script(src='javascripts/bootstrap.min.js')
+    script(src='javascripts/holder.js')

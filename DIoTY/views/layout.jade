@@ -3,5 +3,30 @@ html
   head
     title= title
     meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href='stylesheets/bootstrap.min.css' rel='stylesheet' media='screen')
+    link(href='stylesheets/style.css' rel='stylesheet')
+    
   body
+    div.navbar.navbar-inverse.navbar-fixed-top
+        div.container
+            div.navbar-header
+                button.navbar-toggle(type='button' data-toggle='collapse' data-target='.navbar-collapse')
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a.navbar-brand #{title}
+            div.navbar-collapse.collapse
+                ul.nav.navbar-nav
+                    li: a(href='/') Home
+                    li.dropdown
+                        a.dropdown-toggle(data-toggle="dropdown") For Users
+                        ul.dropdown-menu
+                            li: a(href='/my-thermometer') My Thermometer
+                            li: a(href='/trends') My Temperature Trends
+                    li.dropdown
+                        a.dropdown-toggle(data-toggle="dropdown") For Developers
+                        ul.dropdown-menu
+                            li: a(href='/openapi.html') Do IoT Yourself API documentation
+                            li: a(href='/javascripts/api.ts.js') API implementation (JavaScript version)
+                            li: a(href='/javascripts/api.ts') API implementation (TypeScript version)
     block content

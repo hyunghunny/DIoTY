@@ -32,18 +32,13 @@ var logger = {
             console.log('[INFO] ' + message);
     }
 };
-logger.flag = 0 /* All */;
+logger.flag = 1 /* Critical */;
 
 var SensorsManager = (function () {
     function SensorsManager(url) {
         this.url = url;
         logger.i('The Manager of sensors at ' + url + ' is initialized.');
     }
-    /**
-    * \brief Get all sensors or a specific sensor with id.
-    * \param callback RetrieveSensorsCallback callback = function (Sensor sensorObj or Sensor[] sensors)
-    * \param id? DOMString sensorId
-    */
     SensorsManager.prototype.retrieve = function (scb, ecb, id) {
         if (id != null) {
             this.url = this.url + '/' + id;
@@ -180,6 +175,21 @@ var Thermometer = (function (_super) {
     return Thermometer;
 })(Sensor);
 
+// Factory class for creating APIs object
+var OpenAPIManager = (function () {
+    function OpenAPIManager(options) {
+        // default options
+        this.options = {
+            ipAddress: ''
+        };
+        if (options && options.ipAddress) {
+            this.options.ipAddress = options.ipAddress;
+        }
+        this.sensors = new SensorsManager(this.options.ipAddress + '/api/sensors');
+    }
+    return OpenAPIManager;
+})();
+
 function ajaxGet(url, scb, ecb) {
     try  {
         this.url = url;
@@ -240,21 +250,6 @@ function ajaxPut(url, body, scb, ecb) {
         ecb(error);
     }
 }
-
-// Factory class for creating APIs object
-var OpenAPIManager = (function () {
-    function OpenAPIManager(options) {
-        // default options
-        this.options = {
-            ipAddress: ''
-        };
-        if (options && options.ipAddress) {
-            this.options.ipAddress = options.ipAddress;
-        }
-        this.sensors = new SensorsManager(this.options.ipAddress + '/api/sensors');
-    }
-    return OpenAPIManager;
-})();
 
 // Open API discovery in nearby devices class
 var OpenAPIFinder = (function () {

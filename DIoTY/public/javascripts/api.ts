@@ -14,7 +14,7 @@ var logger = {
     w: function (message) { if (this.flag != LogFlag.Critical) console.log('[WARN] ' + message);},
     i: function (message) { if (this.flag == LogFlag.All) console.log('[INFO] ' + message);}
 }
-logger.flag = LogFlag.All;
+logger.flag = LogFlag.Critical;
 
 
 class SensorsManager {
@@ -22,11 +22,6 @@ class SensorsManager {
         logger.i('The Manager of sensors at ' + url + ' is initialized.');
     }
 
-    /**
-    * \brief Get all sensors or a specific sensor with id.
-    * \param callback RetrieveSensorsCallback callback = function (Sensor sensorObj or Sensor[] sensors)
-    * \param id? DOMString sensorId
-    */
     public retrieve(scb:Function, ecb?:Function, id?:string): void {                
 
         if (id != null) {
@@ -92,7 +87,7 @@ class Sensor {
         this.status = info['switch'];
     }
 
-     public turnOn(scb: Function, ecb?:Function): void {
+    public turnOn(scb: Function, ecb?:Function): void {
         var body:string = '{ "switch": "on" }';        
         ajaxPut(this.url, body, function (xhr) {
                 this.status = 'on';
@@ -186,6 +181,25 @@ interface OpenAPIOptions {
     ipAddress: string;    
 }
 
+// Factory class for creating APIs object
+class OpenAPIManager {
+
+    public options: OpenAPIOptions;
+    public sensors: SensorsManager;
+
+    constructor(options?:OpenAPIOptions) {
+        // default options
+        this.options = {
+            ipAddress: '' //'http://127.0.0.1:3000'
+        }
+        if (options && options.ipAddress) {
+            this.options.ipAddress = options.ipAddress;
+        } 
+        this.sensors = new SensorsManager(this.options.ipAddress + '/api/sensors');        
+  
+    }
+}
+
 function ajaxGet(url:string, scb: Function, ecb: Function): void {
     try {
         this.url = url;
@@ -244,25 +258,6 @@ function ajaxPut(url:string, body:string, scb: Function, ecb: Function): void {
     } catch (error) {
         logger.w(error);
         ecb(error);
-    }
-}
-
-// Factory class for creating APIs object
-class OpenAPIManager {
-
-    public options: OpenAPIOptions;
-    public sensors: SensorsManager;
-
-    constructor(options?:OpenAPIOptions) {
-        // default options
-        this.options = {
-            ipAddress: '' //'http://127.0.0.1:3000'
-        }
-        if (options && options.ipAddress) {
-            this.options.ipAddress = options.ipAddress;
-        } 
-        this.sensors = new SensorsManager(this.options.ipAddress + '/api/sensors');        
-  
     }
 }
 

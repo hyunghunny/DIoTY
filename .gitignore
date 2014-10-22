@@ -39,3 +39,5 @@ Icon
 # Obj folder for debugging
 DIoTY/obj
 DIoTY/iisnode
+DIoTY/.ntvs_analysis.dat
+DIoTY/.ntvs_analysis.dat.tmp

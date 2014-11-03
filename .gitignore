@@ -41,6 +41,3 @@ DIoTY/obj
 DIoTY/iisnode
 DIoTY/.ntvs_analysis.dat
 DIoTY/.ntvs_analysis.dat.tmp
-
-#exclude node modules
-DIoTY/node_modules

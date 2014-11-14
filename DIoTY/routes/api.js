@@ -83,8 +83,8 @@ router.put('/sensors/:id', function (req, res) {
             throw new Error('406');
         }
 
-        controller.serialToDb(sensorModified.switch, function (result) {
-            console.log('reading serial is ' + result);
+        controller.writeToDb(sensorModified.switch, function (result) {
+            console.log('reading data is ' + result);
             if (result == false) {
                 sensorObj.switch = 'off';                
                 res.sendStatus(500);

@@ -28,6 +28,7 @@
     <Compile Include="routes\index.js" />
     <Content Include="tests\mysql_schema.txt" />
     <Compile Include="routes\trends.js" />
+    <Compile Include="tests\duino-thermometer.js" />
     <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />
     <Compile Include="tests\write_db.js" />

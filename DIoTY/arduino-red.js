@@ -1,7 +1,10 @@
 ﻿var config = require('./config');
 
-var arduinoPort = config.arduino.port; 
-var pinName = config.arduino.pin; 
+var arduinoPort = config.arduino.red.port; 
+var pinName = config.arduino.red.thermistor.pin; 
+
+var board = null;
+var myLed = null;
 
 // look up table for resolving data to the appropriates temperature
 var temps = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 
@@ -69,6 +72,11 @@ exports.connect = function (scb, ecb) {
 	    debug: false //true
 	});
 
+    myLed = new arduino.Led({
+        board: board,
+        pin: config.arduino.led.pin
+    });
+
 	board.on('error', function (err) {
 		console.log("arduino is not installed properly: " + err);
 		ecb(err);
@@ -82,13 +90,13 @@ exports.connect = function (scb, ecb) {
 	        board.analogRead(pinName);
 	    }, 2000);
 
-	    scb(board);
+	    scb();
 	});
 
 }
 
-exports.addTempListener = function (board, cb) {
-	var listenerId;
+exports.addSensorListener = function (cb) {
+	var listenerId = 'tempListener';
 
 	board.on('data', function (message) {
 	    // message looks like {pin}::{data}. so it will be disassembled properly.
@@ -114,6 +122,41 @@ exports.addTempListener = function (board, cb) {
 	return listenerId;
 }
 
-exports.removeTempListener = function (id) {
-	clearInterval(id);
+exports.removeListener = function (id) {
+	if (id === 'tempListener') {
+		// reset event handler
+		board.on('data', function (message) { });
+	}
+}
+
+
+exports.setLedMode = function (mode) {
+
+    switch (mode) {
+        case 'on':
+            myLed.stop();
+            myLed.on();
+            console.log('LED is on.');
+            break;
+        case 'off':
+            myLed.stop();
+            myLed.off();            
+            console.log('LED is off');
+            break;
+        case 'blink':
+            myLed.stop();
+            console.log('LED is blinking');
+            myLed.blink();
+            break;
+        case 'fade':
+            myLed.stop();
+            console.log('LED is fading');
+            myLed.fade();
+            break;
+        default:
+            console.log('invalid mode - Set LED off');
+            myLed.stop();
+            myLed.off();
+            break;
+    }
 }

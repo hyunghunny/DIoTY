@@ -1,23 +1,5 @@
 var img;
-
-function getTemperature() {
-	var temperatureControl = document.getElementById('temp'),
-		iTemp = 0;
-
-	// Ensure the temperature value is a number
-	if (temperatureControl !== null) {
-		iTemp = temperatureControl.value * 1.0;
-	}
-
-	// Sanity checks
-	if (iTemp > 50) {
-		iTemp = 50;
-	} else if (iTemp < -30) {
-		iTemp = -30;
-	}
-
-	return iTemp;
-}
+var currentTemperature;
 
 function getRatio(iTemp) {
 	/* The image is not in proportion this the gauge to pixel 
@@ -84,7 +66,7 @@ function imgOnLoaded() {
 	if (canvas.getContext) {
 
 		ctx = canvas.getContext('2d');
-		iTemp = getTemperature();
+		iTemp = currentTemperature;
 		iRatio = getRatio(iTemp);
 		iTempToYCoord = convertTempToScreenCoord(iRatio, iTemp);
 
@@ -100,6 +82,7 @@ function imgOnLoaded() {
 }
 
 function draw() {
+
 	/* Main entry point got the thermometer Canvas example
 	 * Simply grabs a handle to the canvas element and
 	 * check the conect (Canvas support). 
@@ -122,18 +105,6 @@ function draw() {
 	}
 }
 
-function setTempAndDraw() {
-	/* Function called when user clicks the draw button
-	 */
-    //TODO::link the open API here.
-	var temp = document.getElementById('temp'),
-		slider = document.getElementById('defaultSlider');
-
-	if (temp !== null && slider !== null) {
-		temp.value = slider.value;
-		draw();
-	}
-}
 // Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
 var mySensor;
@@ -168,12 +139,12 @@ function turnOnSensor(sensor, cb) {
 function getLatestTemperature(sensor) {
     sensor.getLatestTemp(function (temp) {
         logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
-        timeWidgetDiv = document.getElementById('timeWidget');
-        timeWidgetDiv.innerHTML = new Date(temp.datePublished).toLocaleString();
-        tempDiv = document.getElementById('temp');
-        tempDiv.value = temp.value;
-        slider = document.getElementById('defaultSlider');
-        slider.value = temp.value;
-        draw();
+        currentTemperature = temp.value;
+        timeWidget = document.getElementById('timeWidget');
+        timeWidget.innerHTML = new Date(temp.datePublished).toLocaleTimeString();
+        humidityWidget = document.getElementById('humidityWidget');
+        humidityWidget.innerHTML = temp.humidity + "%";
+
+        draw();        
     });
 }

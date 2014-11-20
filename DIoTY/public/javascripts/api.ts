@@ -123,13 +123,42 @@ class Sensor {
     }   
 }
 
+interface QueryOptions {
+    date: string;
+    limit: number;
+    skip: number;
+}
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
 class Thermometer extends Sensor {
     constructor (url:string, info:SensorInfo) {
         super(url + '/' + info.id, info);    
     }
 
-    public getTempList(scb: Function, ecb?:Function) : void {
+    public getTempList(scb: Function, ecb?:Function, options?:QueryOptions) : void {
         var url = this.url + '/temperatures';
+        if (options != null) {
+            url = url + '?';
+            if (options.date != null) {
+                url = url + 'date=' + options.date;
+
+            }
+            if (options.limit != null) {
+                if(!endsWith(url, '&')) {
+                    url = url + '&';
+                }
+                url = url + 'limit=' + options.limit;
+            }
+            if (options.skip != null) {
+                if(!endsWith(url, '&')) {
+                    url = url + '&';
+                }
+                url = url + 'skip=' + options.skip;
+            }                        
+        }
         ajaxGet(url, function (xhr) {
             var jsonObj = JSON.parse(xhr.responseText);
             var temps = jsonObj.temperatures;
@@ -144,12 +173,12 @@ class Thermometer extends Sensor {
             scb(tempList);
 
         }, function (err) {
-                if (ecb) {
-                    ecb(err);   
-                } else {
-                    logger.e(err);
-                }  
-            });
+            if (ecb) {
+                ecb(err);   
+            } else {
+                logger.e(err);
+            }  
+        });
     }
 
     public getLatestTemp(scb: Function, ecb?:Function) : void {
@@ -161,13 +190,12 @@ class Thermometer extends Sensor {
             logger.i(temp.datePublished + '\t' + temp.value);
             scb(temp);
         }, function (err) {
-                if (ecb) {
-                    ecb(err);   
-                } else {
-                    logger.e(err);
-                }  
-            });
-
+            if (ecb) {
+                ecb(err);   
+            } else {
+                logger.e(err);
+            }  
+        });
     }
 }
 

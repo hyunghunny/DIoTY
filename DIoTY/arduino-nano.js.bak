@@ -1,0 +1,144 @@
+﻿var config = require('./config');
+var arduino = require('duino');
+
+var board = null;
+var dht11 = null;
+var myLed = null;
+
+var redPin = 9;
+var bluePin = 10;
+var greenPin = 11;
+
+var redValue = 0;
+var greenValue = 164;
+var blueValue = 91;
+
+function setLedColor(mode) {
+
+	switch (mode) {
+		case 'red' :
+			redValue = 255;
+			greenValue = 0;
+			blueValue = 0;			
+			break;
+		case 'blue' :
+			redValue = 0;
+			greenValue = 0;
+			blueValue = 255;			
+			break;
+		case 'green' :
+			redValue = 0;
+			greenValue = 255;
+			blueValue = 0;			
+			break;
+		default: // white
+			redValue = 0;
+			greenValue = 164;
+			blueValue = 91;		
+			break;
+	}
+}
+
+function colorLedOn(board, mode) {
+	setLedColor(mode);
+	console.log('turn on the color LED');
+	setInterval(function () {
+	    board.analogWrite(redPin, redValue);
+	    board.analogWrite(greenPin, greenValue);
+	    board.analogWrite(bluePin, blueValue);		
+	}, 2000);		
+};
+
+var connected = false;
+exports.connect = function (scb, ecb) {
+    // prevent re-connecting 
+    if (connected === false) {
+        board = new arduino.Board({
+            device: config.arduino.port,
+            debug: false //true
+        });
+        
+        dht11 = new arduino.DHT11({
+            board: board,
+            pin: config.arduino.dht11.pin,
+            throttle: 2000
+        });
+        
+        myLed = new arduino.Led({
+            board: board,
+            pin: config.arduino.led.pin
+        });
+        
+        board.on('error', function (err) {
+            console.log("arduino is not installed properly: " + err);
+            ecb(err);
+        });
+        
+        board.on('ready', function () {
+            console.log("arduino board is ready to serve.");
+            colorLedOn(board, 'white');
+            connected = true;
+            scb();
+        });
+    } else {
+        scb();
+    }
+
+}
+
+exports.addSensorListener = function (cb) {
+	var listenerId = 'sensorListener';
+
+	dht11.on('read', function (err, temp, humidity) {
+	    console.log("temperature: " + temp + " degree of Celcius, " + "humidity: " + humidity + "%");
+
+	    if (humidity < 40) {
+	    	setLedColor('red');
+	    } else if (humidity <= 50) {
+	    	setLedColor('green');
+	    } else if (humidity > 50) {
+	    	setLedColor('blue');
+	    }
+	    cb(temp, humidity);
+	});
+
+	return listenerId;
+}
+
+exports.removeListener = function (id) {
+	if (id === 'sensorListener') {
+        dht11.on('read', function (err, temp, humidity) { });
+        id = null;
+	}
+}
+
+exports.setLedMode = function (mode) {
+
+    switch (mode) {
+        case 'on':
+            myLed.stop();
+            myLed.on();
+            console.log('LED is on.');
+            break;
+        case 'off':
+            myLed.stop();
+            myLed.off();            
+            console.log('LED is off');
+            break;
+        case 'blink':
+            myLed.stop();
+            console.log('LED is blinking');
+            myLed.blink();
+            break;
+        case 'fade':
+            myLed.stop();
+            console.log('LED is fading');
+            myLed.fade();
+            break;
+        default:
+            console.log('invalid mode - Set LED off');
+            myLed.stop();
+            myLed.off();
+            break;
+    }
+}

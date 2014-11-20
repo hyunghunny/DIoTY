@@ -128,13 +128,35 @@ var Sensor = (function () {
     return Sensor;
 })();
 
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
 var Thermometer = (function (_super) {
     __extends(Thermometer, _super);
     function Thermometer(url, info) {
         _super.call(this, url + '/' + info.id, info);
     }
-    Thermometer.prototype.getTempList = function (scb, ecb) {
+    Thermometer.prototype.getTempList = function (scb, ecb, options) {
         var url = this.url + '/temperatures';
+        if (options != null) {
+            url = url + '?';
+            if (options.date != null) {
+                url = url + 'date=' + options.date;
+            }
+            if (options.limit != null) {
+                if (!endsWith(url, '&')) {
+                    url = url + '&';
+                }
+                url = url + 'limit=' + options.limit;
+            }
+            if (options.skip != null) {
+                if (!endsWith(url, '&')) {
+                    url = url + '&';
+                }
+                url = url + 'skip=' + options.skip;
+            }
+        }
         ajaxGet(url, function (xhr) {
             var jsonObj = JSON.parse(xhr.responseText);
             var temps = jsonObj.temperatures;

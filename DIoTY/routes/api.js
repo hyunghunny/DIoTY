@@ -1,51 +1,32 @@
 var express = require('express');
 var router = express.Router();
 
-var sensorsObj = {
-    "sensors": [{
-        "type": "thermometer",
-        "id": "thermometer1",
-        "switch": "off"
-    }]
-};
+// Get controller module.
+var controller = require('../control');
+
 
 /* GET api listing. */
 router.get('/', function (req, res) {
-    var apiObj = {
-        "api": [{
-            "id": "/api/sensors",
-            "type": "ItemList"
-        }]
-    };
+
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(apiObj));
+    res.end(JSON.stringify(controller.api));
 });
 
 /* GET api/sensors listing. */
 router.get('/sensors', function (req, res) {
     
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(sensorsObj));
+    res.end(JSON.stringify(controller.sensors));
 });
 
-function findSensor(id) {
-    var sensorObj = null;
-    var sensorList = sensorsObj.sensors;
-    for (var i = 0; i < sensorList.length; i++) {
-        if (sensorList[i].id == id) {
-            sensorObj = sensorList[i];
-            return sensorObj;
-        }
-    }
-    return null;
-}
+
 
 /* GET api/sensors/:id */
 router.get('/sensors/:id', function (req, res) {
     try {
         var id = req.params.id;
         // search the sensor in the sensors
-        var sensorObj = findSensor(id);
+        var sensorObj = controller.sensors.find(id);
         
         if (sensorObj == null) {
             throw new Error('404');
@@ -58,15 +39,13 @@ router.get('/sensors/:id', function (req, res) {
     }    
 });
 
-// Get data base manipulation module.
-var controller = require('../control');
 
 /* PUT api/sensors/:id  */
 router.put('/sensors/:id', function (req, res) {
     try {
         // search the sensor in the sensors
         var id = req.params.id;
-        var sensorObj = findSensor(id);
+        var sensorObj = controller.sensors.find(id);
 
         if (sensorObj == null) {
             throw new Error('404');
@@ -83,8 +62,8 @@ router.put('/sensors/:id', function (req, res) {
             throw new Error('406');
         }
 
-        controller.writeToDb(sensorModified.switch, function (result) {
-            console.log('reading data is ' + result);
+        sensorObj.setMode(sensorModified.switch, function (result) {
+            
             if (result == false) {
                 sensorObj.switch = 'off';                
                 res.sendStatus(500);
@@ -106,12 +85,12 @@ router.get('/sensors/:id/temperatures', function (req, res) {
         var id = req.params.id;
         var queries = req.query;  // TODO:handle extra queries 
         // search the sensor in the sensors
-        var sensorObj = findSensor(id);
+        var sensorObj = controller.sensors.find(id);
 
         if (sensorObj == null) {
             throw new Error('404');
         }
-        var tempList = controller.getTemperatureList(function (tempList) {           
+        var tempList = sensorObj.getTemperatureList(function (tempList) {           
             var temps = {
                 temperatures: tempList
             };
@@ -132,12 +111,12 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
         var id = req.params.id;
         
         // search the sensor in the sensors
-        var sensorObj = findSensor(id);
+        var sensorObj = controller.sensors.find(id);
 
         if (sensorObj == null) {
             throw new Error('404');
         }
-        var tempList = controller.getLatestTemperature(function (temp) {
+        var tempList = sensorObj.getLatestTemperature(function (temp) {
             var tempObj = {
                 temperature: temp
             };
@@ -151,5 +130,71 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
         res.sendStatus(err.message);
     }
 });
+
+
+/* GET api/actuators listing. */
+router.get('/actuators', function (req, res) {
+    
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(controller.actuators));
+});
+
+
+/* GET api/actuators/:id */
+router.get('/actuators/:id', function (req, res) {
+    try {
+        var id = req.params.id;
+        // search the sensor in the sensors
+        var actuatorObj = controller.actuators.find(id);
+        
+        if (actuatorObj == null) {
+            throw new Error('404');
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(actuatorObj));
+    } catch (err) {
+        // return error code here
+        res.sendStatus(err.message);
+    }
+});
+
+/* PUT api/actuators/:id  */
+router.put('/actuators/:id', function (req, res) {
+    try {
+        // search the sensor in the sensors
+        var id = req.params.id;
+        var actuatorObj = controller.actuators.find(id);
+        
+        if (actuatorObj == null) {
+            throw new Error('404');
+        }
+        
+        if (!req.is('application/json')) {
+            throw new Error('406');
+        }
+        
+        var actuatorModified = req.body;
+        
+        if (!actuatorModified.switch == null) {
+            // throw 406 Not Acceptable
+            throw new Error('406');
+        }
+        
+        actuatorObj.setMode(actuatorModified.switch, function (result) {
+            if (result) {
+                actuatorObj.switch = actuatorModified.switch;
+                res.sendStatus(202);
+            } else {
+                actuatorObj.switch = 'off';
+                res.sendStatus(500);
+            }
+        });
+        
+    } catch (err) {
+        console.log(err.message);
+        res.sendStatus(err.message);
+    }
+});
+
 
 module.exports = router;

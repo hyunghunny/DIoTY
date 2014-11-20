@@ -1,8 +1,6 @@
 ﻿google.load("visualization", "1", { packages: ["corechart"] });
 google.setOnLoadCallback(requestData);
 
-var dateDiv = document.getElementById('date');
-var dateString = dateDiv.innerHTML;
 function requestData() {
     // Add below code to get latest temperature of a sensor.
     var myapi = new OpenAPIManager();
@@ -16,9 +14,7 @@ function requestData() {
             turnOnSensor(mySensor, function () {
                 mySensor.getTempList(function (temperatures) {
                     drawChart(temperatures);
-                }, function (err) {
-                    console.log('error on getting temperature list: ' + err);
-                }, { "date" : dateString });
+                });
             });
         }
     });

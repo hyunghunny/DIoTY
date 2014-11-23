@@ -4,12 +4,20 @@ var router = express.Router();
 // Get controller module.
 var controller = require('../control');
 
-
 /* GET api listing. */
 router.get('/', function (req, res) {
-
+    var api = {
+        "api": [{
+                "id": "/api/sensors",
+                "type": "ItemList"
+            },
+        {
+                "id": "/api/actuators",
+                "type": "ItemList"
+            }]
+    };
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(controller.api));
+    res.end(JSON.stringify(api));
 });
 
 /* GET api/sensors listing. */
@@ -18,8 +26,6 @@ router.get('/sensors', function (req, res) {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(controller.sensors));
 });
-
-
 
 /* GET api/sensors/:id */
 router.get('/sensors/:id', function (req, res) {
@@ -38,7 +44,6 @@ router.get('/sensors/:id', function (req, res) {
         res.sendStatus(err.message);
     }    
 });
-
 
 /* PUT api/sensors/:id  */
 router.put('/sensors/:id', function (req, res) {
@@ -131,14 +136,12 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
     }
 });
 
-
 /* GET api/actuators listing. */
 router.get('/actuators', function (req, res) {
     
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(controller.actuators));
 });
-
 
 /* GET api/actuators/:id */
 router.get('/actuators/:id', function (req, res) {
@@ -195,6 +198,5 @@ router.put('/actuators/:id', function (req, res) {
         res.sendStatus(err.message);
     }
 });
-
 
 module.exports = router;

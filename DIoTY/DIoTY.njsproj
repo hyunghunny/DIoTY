@@ -18,7 +18,9 @@
   <ItemGroup>
     <Content Include="package.json" />
     <Compile Include="app.js" />
-    <Compile Include="dateformat.js" />
+    <Compile Include="config.js" />
+    <Compile Include="arduino-red.js" />
+    <Compile Include="arduino-nano.js" />
     <Compile Include="control.js" />
     <Content Include="iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />
     <Content Include="iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
@@ -28,14 +30,16 @@
     <Compile Include="routes\index.js" />
     <Content Include="tests\mysql_schema.txt" />
     <Compile Include="routes\trends.js" />
+    <Compile Include="routes\thermometer.js" />
     <Compile Include="tests\duino-thermometer.js" />
-    <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />
-    <Compile Include="tests\write_db.js" />
     <Content Include="views\basic.jade" />
     <Content Include="views\error.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
+    <Content Include="views\trends.jade" />
+    <Content Include="views\thermometer.jade" />    
+<!--
     <Content Include="obj\Debug\DIoTY.njsproj.FileListAbsolute.txt" />
     <Content Include="obj\Debug\package.json" />
     <Compile Include="obj\Debug\app.js" />
@@ -55,10 +59,11 @@
     <Content Include="obj\Debug\views\layout.jade" />
     <Content Include="obj\Debug\public\images\thermometer-template.png" />
     <Content Include="obj\Debug\public\stylesheets\style.css" />
+    
     <Content Include="public\images\thermometer-template.png" />
     <Compile Include="public\javascripts\thermometer.js" />
     <Content Include="public\stylesheets\style.css" />
-    <Content Include="views\trends.jade" />
+-->
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin" />

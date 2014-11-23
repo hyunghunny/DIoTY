@@ -11,13 +11,14 @@ var routes = require('./routes/index');
 var apis = require('./routes/api');
 
 // add to response thermometer page
-var thermometer = require('./routes/my-thermometer');
+var thermometer = require('./routes/thermometer');
 
 // add to response trends page
 var trends = require('./routes/trends');
 
 
 var app = express();
+
 // to support CORS
 var allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -48,8 +49,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/api', apis);
+
 // add to response
-app.use('/my-thermometer', thermometer);
+app.use('/thermometer', thermometer);
 app.use('/trends', trends);
 
 // catch 404 and forward to error handler

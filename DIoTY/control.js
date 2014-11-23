@@ -27,17 +27,6 @@ process.on('exit', function (code) {
     db.close();
 });
 
-exports.api = {
-    "api": [{
-            "id": "/api/sensors",
-            "type": "ItemList"
-        },
-        {
-            "id": "/api/actuators",
-            "type": "ItemList"
-        }]
-};
-
 /*************************************************************************/
 // Sensors
 
@@ -45,28 +34,32 @@ function Thermometer(id) {
     this.type = "thermometer";
     this.id = id;
     this.switch = "off";
+
+    this._prevSensingObj = null;
 }
-var prevObj = null;
+
 Thermometer.prototype.setMode = function (mode, cb) {
     if (mode == 'on') {
         if (listenerId == null) {
-            arduino.connect(function () {
+            arduino.board.connect(function () {
                 if (myCollection == null) {
                     // error to open mongodb 
                     console.log('mongodb does not initialize properly.');
                     cb(false);
                 } else {
-                    listenerId = arduino.addSensorListener(function (tempValue, humidityValue) {
+                    var self = this;
+                    listenerId = arduino.board.hygrometer.addListener(function (tempValue, humidityValue) {
                         var sensingObj = {
                             datePublished: new Date(),
                             value: tempValue,
                             unitOfMeasure: "celsius",
                             humidity: humidityValue
                         };
-                        if (prevObj === null) {
-                            prevObj = sensingObj;
-                        } else if (prevObj.value !== sensingObj.value || 
-                            prevObj.humidity !== sensingObj.humidity) {
+                        if (self._prevSensingObj === null) {
+                            self._prevSensingObj = sensingObj; // save the sensingObj at first retrieving
+
+                        } else if (self._prevSensingObj.value !== sensingObj.value || 
+                            self._prevSensingObj.humidity !== sensingObj.humidity) {
                             // insert object when the values of an object is updated.
                             console.log(sensingObj.datePublished.toTimeString() + 
                                 ":temperature: " + sensingObj.value + "C, " + 
@@ -76,7 +69,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                                     console.log(err);
                                 } 
                             });
-                            prevObj = sensingObj; // save the object as the previous object
+                            self._prevSensingObj = sensingObj; // save the object as the previous object
                         }
 
                     });
@@ -93,13 +86,13 @@ Thermometer.prototype.setMode = function (mode, cb) {
         }
     } else {
         // stop to write temperatures into database 
-        arduino.removeListener(listenerId);
+        arduino.board.hygrometer.removeListener(listenerId);
         cb(true);
     }
 }
 
 // translate dateString to Date object considering with appropriate time zone difference.
-function getLocalDate(dateString) {
+Thermometer.prototype.getLocalDate = function (dateString) {
     var date = new Date(dateString);
     var timeZoneOffset = date.getTimezoneOffset();
     //console.log('time zone offset: ' + timeZoneOffset + ' mins');
@@ -127,8 +120,8 @@ Thermometer.prototype.getTemperatureList = function (callback, queries) {
             if (queries.date != null) {
                 var dateString = queries.date;
                 //XXX:validate dateString later
-                var startDate = getLocalDate(dateString);
-                var endDate = getLocalDate(dateString);
+                var startDate = this.getLocalDate(dateString);
+                var endDate = this.getLocalDate(dateString);
                 endDate.setDate(endDate.getDate() + 1);
                 console.log("from " + startDate + " to " + endDate);   
                 
@@ -167,24 +160,36 @@ Thermometer.prototype.getLatestTemperature = function (callback) {
     }
 }
 
-var myThermometer = new Thermometer("thermometer1");
-
-var sensorsObj = {
-    sensors: [ myThermometer ],
-    find : function (id) {
-        var sensorObj = null;
-        var sensorList = this.sensors;
-        for (var i = 0; i < sensorList.length; i++) {
-            if (sensorList[i].id == id) {
-                sensorObj = sensorList[i];
-                return sensorObj;
-            }
+function SensorsManager(array) {
+    this.sensors = array;
+    this.api = [];
+    for (var i = 0; i < array.length; i++) {
+        var apiObj = {
+            "id": "/api/sensors/" + array[i].id,
+            "type": "ItemList"
         }
-        return null;
+        this.api.push(apiObj);
     }
-};
+}
 
-exports.sensors = sensorsObj;
+SensorsManager.prototype.find = function (id) {
+    var sensorObj = null;
+    var sensorList = this.sensors;
+    for (var i = 0; i < sensorList.length; i++) {
+        if (sensorList[i].id == id) {
+            sensorObj = sensorList[i];
+            return sensorObj;
+        }
+    }
+    return null;
+}
+
+//TODO: add more sensors to SensorsManager 
+exports.sensors = new SensorsManager(
+    [
+        new Thermometer("thermometer1")
+    ]
+);
 
 /*************************************************************************/
 // Actuators
@@ -193,32 +198,118 @@ function Led(id) {
     this.type = 'led',
     this.id = id;
     this.switch = 'off';
+
+    this._led = arduino.board.builtinLed;
 }
 
 Led.prototype.setMode = function (mode, cb) {
-    arduino.connect(function () {
-        arduino.setLedMode(mode);
+    var led = this._led;
+    arduino.board.connect(function () {
+        switch (mode) {
+            case 'on':
+                led.stop();
+                led.on();
+                console.log('LED is on.');
+                this.switch = 'on';
+                break;
+
+            case 'off':
+                led.stop();
+                led.off();
+                console.log('LED is off');
+                this.switch = 'off';
+                break;
+
+            case 'blink':
+                led.stop();
+                console.log('LED is blinking');
+                led.blink();
+                this.switch = 'blink';
+                break;
+
+            case 'fade':
+                builtinLed.stop();
+                console.log('LED is fading');
+                led.fade();
+                this.switch = 'fade';
+                break;
+
+            default:
+                console.log('invalid mode - Set LED off');
+                led.stop();
+                led.off();
+                break;
+        }
         cb(true);
     }, function (err) {
         cb(false);
     });
 }
 
-var myLed = new Led("led0");
+function ColorLed(id) {
+    this.type = 'led',
+    this.id = id;
+    this.switch = 'off';
 
-var actuatorsObj = {
-    actuators: [myLed],
-    find : function (id) {
-        var actuatorObj = null;
-        var actuatorList = this.actuators;
-        for (var i = 0; i < actuatorList.length; i++) {
-            if (actuatorList[i].id == id) {
-                actuatorObj = actuatorList[i];
-                return actuatorObj;
-            }
+    this._led = arduino.board.colorLed;
+}
+
+ColorLed.prototype.setMode = function (mode, cb) {
+    var led = this._led;
+    arduino.board.connect(function () {
+        switch (mode) {
+            case 'on':
+                led.on();
+                console.log('LED is on.');
+                this.switch = 'on';
+                break;
+
+            case 'off':
+                led.off();
+                console.log('LED is off');
+                this.switch = 'off';
+                break;
+
+            default:
+                console.log('Set LED color to ' + mode);
+                led.setColor(mode);
+                this.switch = mode;
+                break;
         }
-        return null;
-    }
-};
+        cb(true);
+    }, function (err) {
+        cb(false);
+    });
+}
 
-exports.actuators = actuatorsObj;
+function ActuatorsManager(array) {
+    this.actuators = array;
+    this.api = [];
+    for (var i = 0; i < array.length; i++) {
+        var apiObj = {
+            "id": "/api/actuators/" + array[i].id,
+            "type": "ItemList"
+        }
+        this.api.push(apiObj);
+    }
+}
+
+ActuatorsManager.prototype.find = function (id) {
+    var actuatorsObj = null;
+    var actuatorList = this.actuators;
+    for (var i = 0; i < actuatorList.length; i++) {
+        if (actuatorList[i].id == id) {
+            actuatorObj = actuatorList[i];
+            return actuatorObj;
+        }
+    }
+    return null;
+}
+
+//TODO: add more actuators to ActuatorsManager 
+exports.actuators = new ActuatorsManager(
+    [
+        new Led("led0"), 
+        new ColorLed("led1")
+    ]
+);

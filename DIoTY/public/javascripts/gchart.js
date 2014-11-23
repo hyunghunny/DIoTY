@@ -3,6 +3,8 @@ google.setOnLoadCallback(requestData);
 
 var dateDiv = document.getElementById('date');
 var dateString = dateDiv.innerHTML;
+var loading = document.getElementById('loading');
+
 function requestData() {
     // Add below code to get latest temperature of a sensor.
     var myapi = new OpenAPIManager();
@@ -15,7 +17,10 @@ function requestData() {
             console.log('getting thermometer is successful. ');
             turnOnSensor(mySensor, function () {
                 mySensor.getTempList(function (temperatures) {
-                    drawChart(temperatures);
+                    loading.style.visibility = "hidden";
+                    if (temperatures != null & temperatures.length > 0) {
+                        drawChart(temperatures);
+                    }                    
                 }, function (err) {
                     console.log('error on getting temperature list: ' + err);
                 }, { "date" : dateString });
@@ -41,7 +46,6 @@ function turnOnSensor(sensor, cb) {
 function drawChart(temperatures) {
 
     // transform temperatures to appropriate array
-
     var title = ['time',  'humidity', 'temperature',];
     var trendArray = [ title ];
     
@@ -68,5 +72,6 @@ function drawChart(temperatures) {
         
     };
     var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-    chart.draw(data, options);
+    chart.draw(data, options);    
+    
 }

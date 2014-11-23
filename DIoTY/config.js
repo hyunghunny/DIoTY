@@ -16,6 +16,7 @@
             uri: './arduino-nano',
             port: 'COM6',   // only works in windows with patched duino module.
             dht11 : {
+                throttle: 5000,
                 pin: 'A2'       // it means that pin is connected to the sensor
             },
             led: {

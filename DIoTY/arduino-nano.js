@@ -69,7 +69,7 @@ function Hygrometer(options) {
     this.dht11 = new arduino.DHT11({
         board: options.board,
         pin: options.pin,
-        throttle: 2000
+        throttle: options.throttle
     });
 }
 

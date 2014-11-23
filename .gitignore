@@ -44,4 +44,4 @@ DIoTY/.ntvs_analysis.dat.tmp
 DIoTY/bin
 
 # enable if you want to download node modules manually.
-# DIoTY/node_modules
+DIoTY/node_modules

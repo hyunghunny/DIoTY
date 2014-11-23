@@ -30,7 +30,7 @@ process.on('exit', function (code) {
 /*************************************************************************/
 // Sensors
 
-function Thermometer(id) {
+var Thermometer = function (id) {
     this.type = "thermometer";
     this.id = id;
     this.switch = "off";
@@ -164,7 +164,7 @@ Thermometer.prototype.getLatestTemperature = function (callback) {
     }
 }
 
-function SensorsManager(array) {
+var SensorsManager = function(array) {
     this.sensors = array;
     this.api = [];
     for (var i = 0; i < array.length; i++) {
@@ -198,7 +198,7 @@ exports.sensors = new SensorsManager(
 /*************************************************************************/
 // Actuators
 
-function Led(id) {
+var Led = function (id) {
     this.type = 'led',
     this.id = id;
     this.switch = 'off';
@@ -250,7 +250,7 @@ Led.prototype.setMode = function (mode, cb) {
     });
 }
 
-function ColorLed(id) {
+var ColorLed = function(id) {
     this.type = 'led',
     this.id = id;
     this.switch = 'off';
@@ -286,7 +286,7 @@ ColorLed.prototype.setMode = function (mode, cb) {
     });
 }
 
-function ActuatorsManager(array) {
+var ActuatorsManager = function (array) {
     this.actuators = array;
     this.api = [];
     for (var i = 0; i < array.length; i++) {

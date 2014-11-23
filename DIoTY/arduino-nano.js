@@ -1,7 +1,7 @@
 ﻿var config = require('./config');
 var arduino = require('duino');
 
-function ColorLed(options) {
+var ColorLed = function (options) {
     this.board = options.board;
     this.redPin = options.redPin;
     this.greenPin = options.greenPin;
@@ -65,7 +65,7 @@ ColorLed.prototype.off = function () {
     }, 2000);       
 }    
 
-function Hygrometer(options) {
+var Hygrometer = function(options) {
     this.dht11 = new arduino.DHT11({
         board: options.board,
         pin: options.pin,
@@ -91,7 +91,7 @@ Hygrometer.prototype.removeListener = function (id) {
     }
 }
 
-function NanoBoard(options) {
+var NanoBoard = function(options) {
     this.options = options;
     this.debug = false;
     this.connected = false;

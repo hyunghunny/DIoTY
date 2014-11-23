@@ -36,6 +36,8 @@ var Thermometer = function (id) {
     this.switch = "off";
 
     this._prevSensingObj = null;
+
+    console.log(this.id + ' is constructed');
 }
 
 Thermometer.prototype.setMode = function (mode, cb) {

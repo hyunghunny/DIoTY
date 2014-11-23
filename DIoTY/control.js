@@ -36,21 +36,18 @@ var Thermometer = function (id) {
     this.switch = "off";
 
     this._prevSensingObj = null;
-
-    console.log(this.id + ' is constructed');
 }
 
 Thermometer.prototype.setMode = function (mode, cb) {
     if (mode == 'on') {
         if (listenerId == null) {
+            var self = this;
             arduino.board.connect(function () {
                 if (myCollection == null) {
                     // error to open mongodb 
                     console.log('mongodb does not initialize properly.');
                     cb(false);
-                } else {
-                    var self = this;
-                    console.log('previous object is ' + self._prevSensingObj);
+                } else {                    
                     listenerId = arduino.board.hygrometer.addListener(function (tempValue, humidityValue) {
                         var sensingObj = {
                             datePublished: new Date(),
@@ -58,9 +55,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                             unitOfMeasure: "celsius",
                             humidity: humidityValue
                         };
-                        if (self == null) {
-                            console.log('ERROR: self is not initialized ' + self);
-                        }
+
                         if (self._prevSensingObj === null) {
                             self._prevSensingObj = sensingObj; // save the sensingObj at first retrieving
 

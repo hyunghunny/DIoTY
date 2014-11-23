@@ -48,6 +48,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                     cb(false);
                 } else {
                     var self = this;
+                    console.log('Self is ' + self);
                     listenerId = arduino.board.hygrometer.addListener(function (tempValue, humidityValue) {
                         var sensingObj = {
                             datePublished: new Date(),
@@ -55,6 +56,9 @@ Thermometer.prototype.setMode = function (mode, cb) {
                             unitOfMeasure: "celsius",
                             humidity: humidityValue
                         };
+                        if (self == null) {
+                            console.log('ERROR: self is not initialized ' + self);
+                        }
                         if (self._prevSensingObj === null) {
                             self._prevSensingObj = sensingObj; // save the sensingObj at first retrieving
 

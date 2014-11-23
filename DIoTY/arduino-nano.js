@@ -112,7 +112,8 @@ NanoBoard.prototype.connect = function (scb, ecb) {
         
         this.hygrometer = new Hygrometer({
             board: this.board,
-            pin: this.options.dht11.pin
+            pin: this.options.dht11.pin,
+            throttle: this.options.dht11.throttle
         });
         
         this.builtinLed = new arduino.Led({

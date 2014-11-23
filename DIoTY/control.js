@@ -48,7 +48,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                     cb(false);
                 } else {
                     var self = this;
-                    console.log('Self is ' + self);
+                    console.log('previous object is ' + self._prevSensingObj);
                     listenerId = arduino.board.hygrometer.addListener(function (tempValue, humidityValue) {
                         var sensingObj = {
                             datePublished: new Date(),

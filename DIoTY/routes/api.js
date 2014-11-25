@@ -6,24 +6,19 @@ var controller = require('../control');
 
 /* GET api listing. */
 router.get('/', function (req, res) {
-    var api = {
-        "api": [{
-                "id": "/api/sensors",
-                "type": "ItemList"
-            },
-        {
-                "id": "/api/actuators",
-                "type": "ItemList"
-            }]
-    };
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(api));
+    if (req.headers['content-type'] == 'application/json') {
+        res.writeHead(200, controller.api.getContentHeader());
+        res.end(controller.api.getBillboard());
+    } else {
+        res.redirect('/api.html');
+    }
+
 });
 
 /* GET api/sensors listing. */
 router.get('/sensors', function (req, res) {
     
-    res.writeHead(200, { "Content-Type": "application/json" });
+    res.writeHead(200, controller.api.getContentHeader());
     res.end(JSON.stringify(controller.sensors));
 });
 
@@ -37,7 +32,7 @@ router.get('/sensors/:id', function (req, res) {
         if (sensorObj == null) {
             throw new Error('404');
         }
-        res.writeHead(200, { "Content-Type": "application/json" });
+        res.writeHead(200, controller.api.getContentHeader());
         res.end(JSON.stringify(sensorObj));
     } catch (err) {
         // return error code here
@@ -56,7 +51,7 @@ router.put('/sensors/:id', function (req, res) {
             throw new Error('404');
         }
 
-        if (!req.is('application/json')) {
+        if (req.headers['content-type'] != 'application/json') {
             throw new Error('406');
         }
 
@@ -100,7 +95,7 @@ router.get('/sensors/:id/temperatures', function (req, res) {
                 temperatures: tempList
             };
             
-            res.writeHead(200, { "Content-Type": "application/json" });
+            res.writeHead(200, controller.api.getContentHeader());
             res.end(JSON.stringify(temps));
         },queries);
 
@@ -126,7 +121,7 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
                 temperature: temp
             };
 
-            res.writeHead(200, { "Content-Type": "application/json" });
+            res.writeHead(200, controller.api.getContentHeader());
             res.end(JSON.stringify(tempObj));
         });
 
@@ -139,7 +134,7 @@ router.get('/sensors/:id/temperatures/latest', function (req, res) {
 /* GET api/actuators listing. */
 router.get('/actuators', function (req, res) {
     
-    res.writeHead(200, { "Content-Type": "application/json" });
+    res.writeHead(200, controller.api.getContentHeader());
     res.end(JSON.stringify(controller.actuators));
 });
 
@@ -153,7 +148,7 @@ router.get('/actuators/:id', function (req, res) {
         if (actuatorObj == null) {
             throw new Error('404');
         }
-        res.writeHead(200, { "Content-Type": "application/json" });
+        res.writeHead(200, controller.api.getContentHeader());
         res.end(JSON.stringify(actuatorObj));
     } catch (err) {
         // return error code here
@@ -172,7 +167,7 @@ router.put('/actuators/:id', function (req, res) {
             throw new Error('404');
         }
         
-        if (!req.is('application/json')) {
+        if (req.headers['content-type'] != 'application/json') {
             throw new Error('406');
         }
         

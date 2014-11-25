@@ -53,7 +53,7 @@ ColorLed.prototype.on = function () {
 }
 
 ColorLed.prototype.off = function () {
-    console.log('turn off the color LED');
+    //console.log('turn off the color LED');
     if (this.timerId != null) {
         clearInterval(this.timer);
     }

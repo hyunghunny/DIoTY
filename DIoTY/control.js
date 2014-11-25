@@ -3,15 +3,17 @@ var config = require('./config'),
 
 var arduino = require(config.arduino.default.uri);
 
-var dbServer = new mongodb.Server(config.mongodb.host, 
+var dbServer = new mongodb.Server(
+    config.mongodb.host, 
     config.mongodb.port, 
-    { auto_reconnect: true });
+    { auto_reconnect: true }
+);
 
 var db = new mongodb.Db(config.mongodb.dbName, 
     dbServer, 
-    { w: 1 });
+    { w: 1 }
+);
 
-var listenerId = null;
 var myCollection = null;
 
 db.open(function (err, connection) {
@@ -28,52 +30,111 @@ process.on('exit', function (code) {
 });
 
 /*************************************************************************/
+// APIs
+var APIManager = function (contentType) {
+    this.contentType = contentType;    
+};
+
+APIManager.prototype.getBillboard = function () {
+    if (this.contentType == 'application/json') {
+        var apiObj = {
+            "api": [{
+                    "href": "/api/sensors",
+                    "type": "ItemList"
+                },
+        {
+                    "href": "/api/actuators",
+                    "type": "ItemList"
+                }]
+        }
+        return JSON.stringify(apiObj);
+    }
+    // TODO: add more content type here.
+}
+
+APIManager.prototype.getContentHeader = function () {
+    return { "Content-Type": this.contentType };
+}
+
+exports.api = new APIManager('application/json');
+
+
+/*************************************************************************/
 // Sensors
+
+var Sensor = function (id) {
+    this.type = 'sensor';
+}
+
+var prevSensingObj = null;
 
 var Thermometer = function (id) {
     this.type = "thermometer";
+
     this.id = id;
     this.switch = "off";
 
-    this._prevSensingObj = null;
+    this.api = [{
+            "href" : "/api/sensors/" + this.id + "/temperatures",
+            "type": "ItemList"
+        },
+        {
+            "href" : "/api/sensors/" + this.id + "/temperatures/latest",
+            "type": "ItemList"
+        }
+    ]
+}
+
+var listenerId = null;
+Thermometer.prototype.startLogging = function () {
+    //TODO: check the sensor parts
+    listenerId = arduino.board.hygrometer.addListener(
+        function (tempValue, humidityValue) {            
+            var sensingObj = {
+                datePublished: new Date(),
+                value: tempValue,
+                unitOfMeasure: "celsius",
+                humidity: humidityValue
+            };
+            
+            if (prevSensingObj === null) {
+                prevSensingObj = sensingObj; // save the sensingObj at first retrieving
+
+            } else if (prevSensingObj.value !== sensingObj.value ||
+                        prevSensingObj.humidity !== sensingObj.humidity) {
+
+                // insert object when the values of an object is updated.
+                console.log(sensingObj.datePublished.toTimeString() + 
+                                    ":temperature: " + sensingObj.value + "C, " + 
+                                    "humidity: " + sensingObj.humidity + "%");
+                myCollection.insert(sensingObj, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+                prevSensingObj = sensingObj; // save the object as the previous object
+            }
+        });
+}
+
+Thermometer.prototype.stopLogging = function () {
+    //TODO: check the sensor parts
+
+    if (listenerId != null) {        
+        arduino.board.hygrometer.removeListener(listenerId);
+    }
 }
 
 Thermometer.prototype.setMode = function (mode, cb) {
     if (mode == 'on') {
-        if (listenerId == null) {
-            var self = this;
+        if (listenerId == null) {            
             arduino.board.connect(function () {
                 if (myCollection == null) {
                     // error to open mongodb 
                     console.log('mongodb does not initialize properly.');
                     cb(false);
                 } else {                    
-                    listenerId = arduino.board.hygrometer.addListener(function (tempValue, humidityValue) {
-                        var sensingObj = {
-                            datePublished: new Date(),
-                            value: tempValue,
-                            unitOfMeasure: "celsius",
-                            humidity: humidityValue
-                        };
-
-                        if (self._prevSensingObj === null) {
-                            self._prevSensingObj = sensingObj; // save the sensingObj at first retrieving
-
-                        } else if (self._prevSensingObj.value !== sensingObj.value || 
-                            self._prevSensingObj.humidity !== sensingObj.humidity) {
-                            // insert object when the values of an object is updated.
-                            console.log(sensingObj.datePublished.toTimeString() + 
-                                ":temperature: " + sensingObj.value + "C, " + 
-                                "humidity: " + sensingObj.humidity + "%");
-                            myCollection.insert(sensingObj, function (err, result) {
-                                if (err) {
-                                    console.log(err);
-                                } 
-                            });
-                            self._prevSensingObj = sensingObj; // save the object as the previous object
-                        }
-
-                    });
+                    this.startLogging();
                     cb(true);
                 }
 
@@ -86,8 +147,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
             cb(true);
         }
     } else {
-        // stop to write temperatures into database 
-        arduino.board.hygrometer.removeListener(listenerId);
+        this.stopLogging();
         cb(true);
     }
 }
@@ -161,12 +221,13 @@ Thermometer.prototype.getLatestTemperature = function (callback) {
     }
 }
 
+
 var SensorsManager = function(array) {
     this.sensors = array;
     this.api = [];
     for (var i = 0; i < array.length; i++) {
         var apiObj = {
-            "id": "/api/sensors/" + array[i].id,
+            "href": "/api/sensors/" + array[i].id,
             "type": "ItemList"
         }
         this.api.push(apiObj);
@@ -200,11 +261,10 @@ var Led = function (id) {
     this.id = id;
     this.switch = 'off';
 
-    this._led = arduino.board.builtinLed;
 }
 
 Led.prototype.setMode = function (mode, cb) {
-    var led = this._led;
+    var led = arduino.board.builtinLed;
     arduino.board.connect(function () {
         switch (mode) {
             case 'on':
@@ -251,12 +311,10 @@ var ColorLed = function(id) {
     this.type = 'led',
     this.id = id;
     this.switch = 'off';
-
-    this._led = arduino.board.colorLed;
 }
 
 ColorLed.prototype.setMode = function (mode, cb) {
-    var led = this._led;
+    var led = arduino.board.colorLed;
     arduino.board.connect(function () {
         switch (mode) {
             case 'on':
@@ -288,7 +346,7 @@ var ActuatorsManager = function (array) {
     this.api = [];
     for (var i = 0; i < array.length; i++) {
         var apiObj = {
-            "id": "/api/actuators/" + array[i].id,
+            "href": "/api/actuators/" + array[i].id,
             "type": "ItemList"
         }
         this.api.push(apiObj);

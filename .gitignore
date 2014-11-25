@@ -43,5 +43,8 @@ DIoTY/.ntvs_analysis.dat
 DIoTY/.ntvs_analysis.dat.tmp
 DIoTY/bin
 
+#folders for IntelliSense
+DIoTY/typings
+
 # enable if you want to download node modules manually.
 DIoTY/node_modules

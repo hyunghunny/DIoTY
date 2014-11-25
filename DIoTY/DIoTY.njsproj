@@ -12,6 +12,9 @@
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <EnableTypeScript>true</EnableTypeScript>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -26,6 +29,7 @@
     <Content Include="iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
     <Content Include="iisnode\index.html" />
     <Compile Include="public\javascripts\gchart.js" />
+    <TypeScriptCompile Include="public\javascripts\api.ts" />
     <Compile Include="routes\api.js" />
     <Compile Include="routes\index.js" />
     <Content Include="tests\mysql_schema.txt" />
@@ -38,32 +42,7 @@
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\trends.jade" />
-    <Content Include="views\thermometer.jade" />    
-<!--
-    <Content Include="obj\Debug\DIoTY.njsproj.FileListAbsolute.txt" />
-    <Content Include="obj\Debug\package.json" />
-    <Compile Include="obj\Debug\app.js" />
-    <Compile Include="obj\Debug\dateformat.js" />
-    <Compile Include="obj\Debug\control.js" />
-    <Content Include="obj\Debug\iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />
-    <Content Include="obj\Debug\iisnode\SERIES9PLUS-16256-stdout-1412064314147.txt" />
-    <Content Include="obj\Debug\iisnode\index.html" />
-    <Compile Include="obj\Debug\routes\api.js" />
-    <Compile Include="obj\Debug\routes\index.js" />
-    <Content Include="obj\Debug\tests\mysql_schema.txt" />
-    <Compile Include="obj\Debug\tests\read_db.js" />
-    <Compile Include="obj\Debug\tests\serial_comm.js" />
-    <Compile Include="obj\Debug\tests\write_db.js" />
-    <Content Include="obj\Debug\views\error.jade" />
-    <Content Include="obj\Debug\views\index.jade" />
-    <Content Include="obj\Debug\views\layout.jade" />
-    <Content Include="obj\Debug\public\images\thermometer-template.png" />
-    <Content Include="obj\Debug\public\stylesheets\style.css" />
-    
-    <Content Include="public\images\thermometer-template.png" />
-    <Compile Include="public\javascripts\thermometer.js" />
-    <Content Include="public\stylesheets\style.css" />
--->
+    <Content Include="views\thermometer.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin" />

@@ -75,9 +75,10 @@ var SensorsManager = (function (_super) {
         logger.i('The Manager of sensors at ' + url + ' initialized.');
     }
     SensorsManager.prototype.find = function (jsonObj, id) {
-        logger.i('Try to find item at ' + JSON.stringify(sensorsObj));
         var sensorList = [];
         var sensorsObj = jsonObj.sensors;
+        logger.i('Try to find item at ' + JSON.stringify(sensorsObj));
+
         if (sensorsObj) {
             for (var i = 0; i < sensorsObj.length; i++) {
                 var sensor = sensorsObj[i];
@@ -155,24 +156,24 @@ var ActuatorsManager = (function (_super) {
 var ArduinoPart = (function () {
     function ArduinoPart(url, info) {
         this.url = url;
-        this.mode = {
-            switch: 'off'
-        };
+        this.mode = 'off';
         logger.i('url: ' + this.url);
         logger.i(JSON.stringify(info));
         this.type = info.type;
         this.id = info.id;
-        this.mode.switch = info.switch;
+        this.mode = info['switch'];
     }
     ArduinoPart.prototype.turnOn = function (scb, ecb) {
+        logger.i('try to turn on...');
         var ajax = new AJAXManager(this.url);
-        this.mode.switch = 'on';
-        ajax.put(this.mode, function (xhr) {
-            logger.i('The sensor is ' + this.mode.switch);
+        this.mode = 'on';
+        var self = this;
+        ajax.put({ 'switch': this.mode }, function (xhr) {
+            logger.i('The sensor is ' + self.mode);
 
             scb();
         }, function (err) {
-            this.mode.switch = 'off';
+            self.mode = 'off';
             if (ecb) {
                 ecb(err);
             } else {
@@ -182,13 +183,15 @@ var ArduinoPart = (function () {
     };
 
     ArduinoPart.prototype.turnOff = function (scb, ecb) {
+        logger.i('try to turn off...');
         var ajax = new AJAXManager(this.url);
-        this.mode.switch = 'off';
-        ajax.put(this.mode, function (xhr) {
-            logger.i('The sensor is ' + this.mode.switch);
+        this.mode = 'off';
+        var self = this;
+        ajax.put({ 'switch': this.mode }, function (xhr) {
+            logger.i('The sensor is ' + self.mode);
             scb();
         }, function (err) {
-            this.mode.switch = 'on';
+            self.mode = 'on';
             if (ecb) {
                 ecb(err);
             } else {

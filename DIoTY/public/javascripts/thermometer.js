@@ -126,7 +126,8 @@ myapi.sensors.retrieve(function (sensors) {
 });
 
 function turnOnSensor(sensor, cb) {
-    if (sensor.status === 'off') {
+    console.log('try to turn on... from ' + JSON.stringify(sensor));
+    if (sensor.mode === 'off') {
         sensor.turnOn(function () {
             cb();
         }, function (err) {

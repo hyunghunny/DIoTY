@@ -61,9 +61,10 @@ class SensorsManager extends DiscoveryManager {
     }
 
     public find(jsonObj, id?: string): Array<ArduinoPart> {
-        logger.i('Try to find item at ' + JSON.stringify(sensorsObj));
         var sensorList: Array<ArduinoPart> = [];
-        var sensorsObj = jsonObj.sensors;        
+        var sensorsObj = jsonObj.sensors;   
+        logger.i('Try to find item at ' + JSON.stringify(sensorsObj));
+             
         if (sensorsObj) {            
 
             for (var i = 0; i < sensorsObj.length; i++) {
@@ -148,36 +149,36 @@ class ActuatorsManager extends DiscoveryManager {
 interface ArduinoPartInfo {
     type: string;
     id: string;
-    switch: string;
+    mode: string;
 }
 
 class ArduinoPart {
     public type: string;
     public id: string;
-    private mode = {
-        switch: 'off'
-    };
+    public mode = 'off';
+    
     constructor (public url:string, info:ArduinoPartInfo) {
         logger.i('url: ' + this.url);
         logger.i(JSON.stringify(info));
         this.type = info.type;
         this.id = info.id;
-        this.mode.switch = info.switch;
+        this.mode = info['switch'];
     }
 
     public turnOn(scb: Function, ecb?:Function): void {
-        
+        logger.i('try to turn on...');
         var ajax = new AJAXManager(this.url);  
-        this.mode.switch = 'on';     
-        ajax.put(this.mode,
+        this.mode = 'on';
+        var self = this;     
+        ajax.put({ 'switch': this.mode },
             function (xhr) {
-                logger.i('The sensor is ' + this.mode.switch);
+                logger.i('The sensor is ' + self.mode);
                 
                 scb();
 
             },
             function (err) {
-                this.mode.switch = 'off';   
+                self.mode = 'off';   
                 if (ecb) {
                     ecb(err);   
                 } else {
@@ -188,17 +189,18 @@ class ArduinoPart {
     }
 
     public turnOff(scb: Function, ecb?:Function): void {
-
+        logger.i('try to turn off...');
         var ajax = new AJAXManager(this.url);
-        this.mode.switch = 'off';
-        ajax.put(this.mode,
+        this.mode = 'off';
+        var self = this;
+        ajax.put({ 'switch': this.mode },
             function (xhr) {
-                logger.i('The sensor is ' + this.mode.switch);
+                logger.i('The sensor is ' + self.mode);
                 scb();
 
             },
             function (err) {
-                this.mode.switch = 'on';
+                self.mode = 'on';
                 if (ecb) {
                     ecb(err);
                 } else {
@@ -244,7 +246,7 @@ class Thermometer extends ArduinoPart {
         ajax.get(function (jsonObj) {
             
             var temps = jsonObj.temperatures;
-            var tempList:Array<TemperatureInfo> =[];
+            var tempList:Array<TemperatureInfo> = [];
             logger.i('The number of temperatures: ' + temps.length);
             for (var i = 0; i < temps.length ; i++) {
                 var temp = temps[i];

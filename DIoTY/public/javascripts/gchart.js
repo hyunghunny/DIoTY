@@ -30,8 +30,8 @@ function requestData() {
 }
 
 function turnOnSensor(sensor, cb) {
-
-    if (sensor.status === 'off') {
+    console.log('try to turn on... from ' + JSON.stringify(sensor));
+    if (sensor.mode === 'off') {
         sensor.turnOn(function () {
             console.log('sensor is on');
             cb();

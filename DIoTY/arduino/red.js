@@ -1,4 +1,4 @@
-﻿var config = require('./config');
+﻿var config = require('../config');
 
 var arduinoPort = config.arduino.red.port; 
 var pinName = config.arduino.red.thermistor.pin; 

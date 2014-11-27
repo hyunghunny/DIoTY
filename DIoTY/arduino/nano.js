@@ -1,4 +1,4 @@
-﻿var config = require('./config');
+﻿var config = require('../config');
 var arduino = require('duino');
 
 var ColorLed = function (options) {

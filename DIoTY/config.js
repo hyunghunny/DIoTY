@@ -13,7 +13,7 @@
 
         // XXX:Set appropriate arduino circuit properties below
         nano: {
-            uri: './arduino-nano',
+            uri: './arduino/nano',
             port: 'COM6',   // only works in windows with patched duino module.
             dht11 : {
                 throttle: 5000,
@@ -30,7 +30,7 @@
         },
 
         red: {
-            uri: './arduino-red',
+            uri: './arduino/red',
             port: 'COM7',
             thermistor: {
                 pin: '00'

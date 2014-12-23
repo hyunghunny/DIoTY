@@ -101,7 +101,7 @@ MongoDBManager.prototype.findLatest = function (callback) {
             if (err) {
                 console.log(err);
             }
-            if (result.length == 1) {
+            if (result != null && result.length == 1) {
                 callback(result[0]);
             } else {
                 callback(0); // XXX:unexpected return from mongodb

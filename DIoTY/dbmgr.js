@@ -98,7 +98,15 @@ MongoDBManager.prototype.findLatest = function (callback) {
                 .sort({ $natural : -1 })
                 .limit(1)
                 .toArray(function (err, result) {
-        callback(result[0]);
+            if (err) {
+                console.log(err);
+            }
+            if (result.length == 1) {
+                callback(result[0]);
+            } else {
+                callback(0); // XXX:unexpected return from mongodb
+            }
+        
     });
 }
 // translate dateString to Date object considering with appropriate time zone difference.

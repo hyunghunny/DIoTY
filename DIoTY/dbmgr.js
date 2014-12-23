@@ -20,10 +20,11 @@ var MongoDBManager = function (options) {
             console.log(err);
         } else {
             console.log('database opened.');
+            db.collection(options.collectionName, function (err, collection) {
+                self.collection = collection;
+            });
         }
-        db.collection(options.collectionName, function (err, collection) {
-            self.collection = collection;
-        });
+ 
     });
     
     process.on('exit', function (code) {

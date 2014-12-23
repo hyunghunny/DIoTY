@@ -52,12 +52,12 @@ MongoDBManager.prototype.insert = function (tempValue, humidityValue) {
         console.log(obj.datePublished.toTimeString() + 
                     ":temperature: " + obj.value + "C, " + 
                     "humidity: " + obj.humidity + "%");
-        this.collection.insert(sensingObj, function (err, result) {
+        this.collection.insert(obj, function (err, result) {
             if (err) {
                 console.log(err);
             }
         });
-        this.prevObj = sensingObj; // save the object as the previous object
+        this.prevObj = obj; // save the object as the previous object
     }
 
 }

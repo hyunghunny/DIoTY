@@ -77,7 +77,7 @@ Hygrometer.prototype.addListener = function (cb) {
     var listenerId = 'sensorListener';
     
     this.dht11.on('read', function (err, temp, humidity) {
-        console.log("temperature: " + temp + " degree of Celcius, " + "humidity: " + humidity + "%");
+        // console.log("temperature: " + temp + " degree of Celcius, " + "humidity: " + humidity + "%");
         cb(temp, humidity);
     });
     

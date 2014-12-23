@@ -16,8 +16,11 @@ var MongoDBManager = function (options) {
     this.prevObj = null;
     var self = this;
     db.open(function (err, connection) {
-        console.log('database opened.');
-        
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('database opened.');
+        }
         db.collection(options.collectionName, function (err, collection) {
             self.collection = collection;
         });

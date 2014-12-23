@@ -69,9 +69,10 @@ Thermometer.prototype.setMode = function (mode, cb) {
                     console.log('mongodb does not initialize properly.');
                     cb(false);
                 } else {
+                    console.log('register hygrometer listener');
                     listenerId = arduino.board.hygrometer.addListener(
                         function (tempValue, humidityValue) {
-                            
+                            console.log('insert into db');
                             dbmgr.insert(tempValue, humidityValue);
                         }
                     );

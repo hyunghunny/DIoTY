@@ -43,10 +43,10 @@ MongoDBManager.prototype.insert = function (tempValue, humidityValue) {
     };    
 
     if (this.prevObj === null) {
-        prevObj = obj; // save the sensingObj at first retrieving
+        this.prevObj = obj; // save the sensingObj at first retrieving
 
-    } else if (prevObj.value !== obj.value ||
-               prevObj.humidity !== obj.humidity) {
+    } else if (this.prevObj.value !== obj.value ||
+               this.prevObj.humidity !== obj.humidity) {
         
         // insert object when the values of an object is updated.
         console.log(obj.datePublished.toTimeString() + 
@@ -57,7 +57,7 @@ MongoDBManager.prototype.insert = function (tempValue, humidityValue) {
                 console.log(err);
             }
         });
-        prevSensingObj = sensingObj; // save the object as the previous object
+        this.prevObj = sensingObj; // save the object as the previous object
     }
 
 }

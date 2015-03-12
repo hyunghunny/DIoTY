@@ -116,9 +116,10 @@ MongoDBManager.prototype.findLatest = function (callback) {
 // translate dateString to Date object considering with appropriate time zone difference.
 var getLocalDate = function (dateString) {
     var date = new Date(dateString);
-    var timeZoneOffset = date.getTimezoneOffset();
+    // XXX:This makes a timeshift to 15:00 hours 
+    //var timeZoneOffset = date.getTimezoneOffset();
     //console.log('time zone offset: ' + timeZoneOffset + ' mins');
-    date.setMinutes(date.getMinutes() + timeZoneOffset);
+    //date.setMinutes(date.getMinutes() + timeZoneOffset);
     return date;
 }
 

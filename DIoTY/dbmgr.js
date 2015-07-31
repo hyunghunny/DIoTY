@@ -92,6 +92,9 @@ MongoDBManager.prototype.findAll = function (queries, callback) {
     }
     this.collection.find(dbquery, { _id: false }, options)
                 .toArray(function (err, result) {
+        if (err) {
+            console.log('error during find all: ' + err);
+        }
         callback(result);
     });
  
@@ -103,7 +106,7 @@ MongoDBManager.prototype.findLatest = function (callback) {
                 .limit(1)
                 .toArray(function (err, result) {
             if (err) {
-                console.log(err);
+                console.log('error during find latest: ' + err);
             }
             if (result != null && result.length == 1) {
                 callback(result[0]);

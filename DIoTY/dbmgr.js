@@ -92,14 +92,16 @@ MongoDBManager.prototype.findAll = function (queries, callback) {
             $lt: endDate
         }
     }
-    console.log('queries: ' + dbquery + ', options: ' + options);
+    console.log('queries: ' + JSON.stringify(dbquery) + ', options: ' + JSON.stringify(options));
     this.collection.find(dbquery, { _id: false }, options)
                 .toArray(function (err, result) {
         if (err) {
             console.log('error during find all: ' + err);
             callback([]);  // return empty list
+        } else {
+            callback(result);
         }
-        callback(result);
+        
     });
  
 }

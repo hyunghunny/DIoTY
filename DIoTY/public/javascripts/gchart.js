@@ -63,7 +63,7 @@ function drawChart(temperatures) {
     var data = google.visualization.arrayToDataTable(trendArray);
     var options = {
         //width : 2048,
-        title: 'Temperatures & Humidity trend',
+        title: 'Temperatures & Humidity Trend',
         legend: { position: 'bottom' },
         // orientation: 'vertical',
         curveType: 'function',

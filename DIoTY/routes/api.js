@@ -83,7 +83,12 @@ router.put('/sensors/:id', function (req, res) {
 router.get('/sensors/:id/temperatures', function (req, res) {
     try {
         var id = req.params.id;
-        var queries = req.query;  // TODO:handle extra queries 
+        var queries = req.query;
+
+        // TODO:handle extra queries 
+        if (!queries.limit) {
+            queries.limit = 100;
+        }
         // search the sensor in the sensors
         var sensorObj = controller.sensors.find(id);
 
@@ -97,7 +102,7 @@ router.get('/sensors/:id/temperatures', function (req, res) {
             
             res.writeHead(200, controller.api.getContentHeader());
             res.end(JSON.stringify(temps));
-        },queries);
+        }, queries);
 
     } catch (err) {
         // return error code here

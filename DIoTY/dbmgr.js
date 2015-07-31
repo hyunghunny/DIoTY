@@ -71,10 +71,12 @@ MongoDBManager.prototype.findAll = function (queries, callback) {
     var dbquery = {};
     if (queries.limit != null) {
         options.limit = queries.limit;
+        console.log('limit: ' + options.limit);
     }
     
     if (queries.skip != null) {
         options.skip = queries.skip;
+        console.log('skip: ' + options.skip);
     }
     
     if (queries.date != null) {
@@ -90,10 +92,12 @@ MongoDBManager.prototype.findAll = function (queries, callback) {
             $lt: endDate
         }
     }
+    console.log('queries: ' + dbquery + ', options: ' + options);
     this.collection.find(dbquery, { _id: false }, options)
                 .toArray(function (err, result) {
         if (err) {
             console.log('error during find all: ' + err);
+            callback([]);  // return empty list
         }
         callback(result);
     });

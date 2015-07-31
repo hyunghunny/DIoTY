@@ -93,12 +93,13 @@ MongoDBManager.prototype.findAll = function (queries, callback) {
         }
     }
     options._id = false;
+    options.sort = { "dataPublished" : -1 };
 
     console.log('queries: ' + JSON.stringify(dbquery) + ', options: ' + JSON.stringify(options));
     this.collection.find(dbquery, options)
                 .toArray(function (err, result) {
         if (err) {
-            console.log('error during find all: ' + err);
+            console.log('error during find all: ' + JSON.stringify(err));
             callback([]);  // return empty list
         } else {
             callback(result);

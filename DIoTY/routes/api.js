@@ -87,7 +87,7 @@ router.get('/sensors/:id/temperatures', function (req, res) {
 
         // TODO:handle extra queries 
         if (!queries.limit) {
-            queries.limit = 100;
+            queries.limit = 100000;
         }
         // search the sensor in the sensors
         var sensorObj = controller.sensors.find(id);

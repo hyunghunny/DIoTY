@@ -30,20 +30,20 @@ function transmit(temperature, humidity) {
     if (isLogin) {
         var sender = transmitter;
         sender.emit(1, tempObs, function (result) {
-            console.log('temps transmitted: ' + result);
+            console.log('temperature transmitted: ' + result);
         });
         sender.emit(2, humObs, function (result) {
-            console.log('humiditys transmitted: ' + result);
+            console.log('humidity transmitted: ' + result);
         });
     } else {
         transmitter.login(id, password, function (sender) {
             if (sender) {
                 isLogin = true;
                 sender.emit(1, tempObs, function (result) {
-                    console.log('temps transmitted: ' + result);
+                    console.log('temperature transmitted: ' + result);
                 });
                 sender.emit(2, humObs, function (result) {
-                    console.log('humiditys transmitted: ' + result);
+                    console.log('humidity transmitted: ' + result);
                 });
             } else {
                 console.log('login error!');

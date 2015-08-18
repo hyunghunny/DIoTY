@@ -240,7 +240,7 @@ var AJAJSONManager = (function () {
 
 // exposes API if the script executes on server side.
 if (typeof module !== 'undefined') {
-exports.transmitter = new RESTTransmitter('http://localhost:3000');
+exports.transmitter = new RESTTransmitter('http://147.47.123.49:3000');
 //exports.logger = logger;
 }
 

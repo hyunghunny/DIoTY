@@ -4,6 +4,55 @@ var arduino = require(config.arduino.default.uri);
 var DBManager = require('./dbmgr');
 var dbmgr = new DBManager(config.mongodb);
 
+
+/*************************************************************************/
+// Sensor Chart API
+
+var sensorchart = require('./sensorchart_api.js');
+var transmitter = sensorchart.transmitter;
+
+var id = 'webofthink';
+var password = '';
+var isLogin = false;
+
+function transmit(temperature, humidity) {
+    var now = new Date();
+    var timestamp = now.getTime();
+    var tempObs = [{
+            "datePublished": timestamp,
+            "value" : temperature
+        }];
+    var humObs = [{
+            "datePublished": timestamp,
+            "value" : humidity
+        }];
+
+    if (isLogin) {
+        var sender = transmitter;
+        sender.emit(1, tempObs, function (result) {
+            console.log('temps transmitted: ' + result);
+        });
+        sender.emit(2, humObs, function (result) {
+            console.log('temps transmitted: ' + result);
+        });
+    } else {
+        transmitter.login(id, password, function (sender) {
+            if (sender) {
+
+                sender.emit(1, tempObs, function (result) {
+                    console.log('temps transmitted: ' + result);
+                });
+                sender.emit(2, humObs, function (result) {
+                    console.log('temps transmitted: ' + result);
+                });
+            } else {
+                console.log('login error!');
+            }
+        });
+    }
+}
+
+
 /*************************************************************************/
 // APIs
 var APIManager = function (contentType) {
@@ -73,6 +122,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                     listenerId = arduino.board.hygrometer.addListener(
                         function (tempValue, humidityValue) {
                             // console.log('insert into db');
+                            transmit(tempValue, humidityValue);
                             dbmgr.insert(tempValue, humidityValue);
                         }
                     );

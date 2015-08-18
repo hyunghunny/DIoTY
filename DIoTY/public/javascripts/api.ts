@@ -383,7 +383,7 @@ class AJAXManager {
 
     }
 };
-
+/*
 // Open API discovery in nearby devices class 
 class OpenAPIFinder {
 
@@ -433,16 +433,16 @@ class OpenAPIFinder {
             case 'range' :
                 var prefix: string = 'http://' + this.classA + '.' + this.classB + '.' + this.classC + '.';
                 var postfix: string =  ':' + this.portNumber;    
-                /*
+                
                 // XXX:below code doesn't work properly. 
-                retrieveAsync(prefix, postfix, this.nearbySensors, function (list) {
-                    if (list.length > 0) {                
-                        scb(list);
-                    } else {
-                        ecb(new Error('No devices found!'));
-                    }          
-                });
-                */
+                //retrieveAsync(prefix, postfix, this.nearbySensors, function (list) {
+                //    if (list.length > 0) {                
+                //        scb(list);
+                //    } else {
+                //        ecb(new Error('No devices found!'));
+                //    }          
+                //});
+                
                  //XXX:below code works but it takes too long time :(  
                 logger.i('start to retrieve sensors...');
                 retrieveSync(prefix, 2, postfix, this.nearbySensors, function(list) {
@@ -545,10 +545,10 @@ function retrieveAsync(prefix:string, postfix:string, list: Array<ArduinoPart>, 
     }
 
 }
-
+*/
 // exposes API if the script executes on server side.
 if (typeof module !== 'undefined') {
     exports.myapi = new OpenAPIManager();
     exports.logger = logger;
-    exports.finder = new OpenAPIFinder();
+    //exports.finder = new OpenAPIFinder();
 }

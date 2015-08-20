@@ -1,52 +1,27 @@
 var express = require('express'),
-    mysql = require('mysql'),
     serialPort = require('serialport'),
     df = require('./dateformat');
 
 // XXX:Set appropriate serial port properties below
-var sp = new serialPort.SerialPort('COM7', {
-    baudrate: 19200,
+var sp = new serialPort.SerialPort('COM8', {
+    baudrate: 9600,
     parser: serialPort.parsers.readline('\n')
 }, false);
 
-// XXX:Set appropriate login information below
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'q1w2e3',
-    database: 'temps'
-});
-
-// to pause or resume DB record
-var recording = "yet";
 
 sp.on('open', function () {
     console.log('serial opened successfully.');
 
     sp.on('data', function (data) {
 
-        var temp = new String(data).trim();
-        var dateString = df.dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss");
-        if (recording == "on") {
-            // write a temperature into DB  
-            connection.query('insert into tempData(tempDate, tempCelsius) values(?, ?)',
-            [dateString, temp],
-                function (err) {
-                    if (err) throw err;
-                });
-        }
+        var value = new String(data).trim();
+        var now = new Date();
+        var timestamp = now.getTime();
+        // TODO:save value with timestamp
 
     });
 });
 
-connection.connect(function (err) {
-    if (err) {
-        // internal server error
-        console.log("database connection error: " + err.message);
-        throw new Error('500');
-    }
-    console.log("database connected successfully");
-});
 
 exports.serialToDb = function (mode, cb) {
 

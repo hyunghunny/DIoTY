@@ -10,11 +10,6 @@ var routes = require('./routes/index');
 // add to response open API
 var apis = require('./routes/api');
 
-// add to response thermometer page
-var thermometer = require('./routes/my-thermometer');
-
-// add to response trends page
-var trends = require('./routes/trends');
 
 
 var app = express();

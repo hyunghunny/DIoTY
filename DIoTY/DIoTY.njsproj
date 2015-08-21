@@ -28,6 +28,7 @@
     <Compile Include="public\javascripts\gchart.js" />
     <Compile Include="routes\api.js" />
     <Compile Include="routes\index.js" />
+    <Content Include="start.sh" />
     <Content Include="tests\mysql_schema.txt" />
     <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />

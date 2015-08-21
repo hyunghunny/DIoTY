@@ -3,9 +3,8 @@ var router = express.Router();
 
 var sensorsObj = {
     "sensors": [{
-        "type": "thermometer",
-        "id": "thermometer1",
-        "switch": "off"
+        "type": "lux_meter",
+        "id": "lux_meter1"
     }]
 };
 
@@ -60,96 +59,5 @@ router.get('/sensors/:id', function (req, res) {
 
 // Get data base manipulation module.
 var controller = require('../control');
-
-/* PUT api/sensors/:id  */
-router.put('/sensors/:id', function (req, res) {
-    try {
-        // search the sensor in the sensors
-        var id = req.params.id;
-        var sensorObj = findSensor(id);
-
-        if (sensorObj == null) {
-            throw new Error('404');
-        }
-
-        if (!req.is('application/json')) {
-            throw new Error('406');
-        }
-
-        var sensorModified = req.body;
-
-        if (!sensorModified.switch == null) {
-            // throw 406 Not Acceptable
-            throw new Error('406');
-        }
-
-        controller.serialToDb(sensorModified.switch, function (result) {
-            console.log('reading serial is ' + result);
-            if (result == false) {
-                sensorObj.switch = 'off';                
-                res.sendStatus(500);
-            } else {
-                sensorObj.switch = sensorModified.switch;
-                res.sendStatus(202);
-            }
-        });
-        
-    } catch (err) {
-        console.log(err.message);
-        res.sendStatus(err.message);
-    }    
-});
-
-/* GET api/sensors/:id/temperatures */
-router.get('/sensors/:id/temperatures', function (req, res) {
-    try {
-        var id = req.params.id;
-        var queries = req.query;  // TODO:handle extra queries 
-        // search the sensor in the sensors
-        var sensorObj = findSensor(id);
-
-        if (sensorObj == null) {
-            throw new Error('404');
-        }
-        var tempList = controller.getTemperatureList(function (tempList) {           
-            var temps = {
-                temperatures: tempList
-            };
-            
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(temps));
-        },queries);
-
-    } catch (err) {
-        // return error code here
-        res.sendStatus(err.message);
-    }
-});
-
-/* GET api/sensors/:id/temperatures/latest */
-router.get('/sensors/:id/temperatures/latest', function (req, res) {
-    try {
-        var id = req.params.id;
-        
-        // search the sensor in the sensors
-        var sensorObj = findSensor(id);
-
-        if (sensorObj == null) {
-            throw new Error('404');
-        }
-        var tempList = controller.getLatestTemperature(function (temp) {
-            var tempObj = {
-                temperature: temp
-            };
-
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(tempObj));
-        });
-
-    } catch (err) {
-        // return error code here
-        res.sendStatus(err.message);
-    }
-});
 
 module.exports = router;

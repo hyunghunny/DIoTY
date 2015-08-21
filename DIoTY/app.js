@@ -10,7 +10,7 @@ var routes = require('./routes/index');
 // add to response open API
 var apis = require('./routes/api');
 
-
+var controller = require('./control.js');
 
 var app = express();
 // to support CORS
@@ -44,8 +44,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/api', apis);
 // add to response
-app.use('/my-thermometer', thermometer);
-app.use('/trends', trends);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -82,5 +80,7 @@ app.use(function(err, req, res, next) {
 var http = require('http');
 http.createServer(app).listen(3000, function () {
     console.log("Express server listening on port 3000");
+    controller.record();
 });
+
 module.exports = app;

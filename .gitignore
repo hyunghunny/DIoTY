@@ -43,6 +43,5 @@ DIoTY/.ntvs_analysis.dat
 DIoTY/.ntvs_analysis.dat.tmp
 DIoTY/bin
 DIoTY/node_modules
-DIoTY/node_modules/*
-DIoTY/node_modules/.*
-DIoTY/*.suo
+DIoTY/data/*.db
+*.suo

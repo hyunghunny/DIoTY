@@ -19,7 +19,7 @@ start(){
 }
 
 stop(){
-        (cd /home/pi/git/DIoTY/DIoTY/ && exec forever stop /home/pi/git/DIoTY/DIoTY/app.js)
+        (forever stopall)
 }
 
 restart(){

@@ -1,6 +1,6 @@
 ﻿var config ={
     'serial' : {
-        'port': 'COM11', // '/dev/ttyUSB0',
+        'port': '/dev/ttyUSB0',
         'baud': 9600
     },
     'sensor' : {

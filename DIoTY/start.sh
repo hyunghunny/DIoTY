@@ -15,7 +15,7 @@ export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
 
 
 start(){
-        (cd /home/pi/git/DIoTY/DIoTY/ && exec forever start /home/pi/git/DIoTY/DIoTY/app.js)
+        (cd /home/pi/git/DIoTY/DIoTY/ && exec forever start app.js)
 }
 
 stop(){
@@ -23,7 +23,7 @@ stop(){
 }
 
 restart(){
-        (cd /home/pi/git/DIoTY/DIoTY/ && exec forever restart /home/pi/git/DIoTY/DIoTY/app.js)
+        (cd /home/pi/git/DIoTY/DIoTY/ && exec forever restart app.js)
 }
 
 case "$1" in

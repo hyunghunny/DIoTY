@@ -4,7 +4,8 @@
         'baud': 9600
     },
     'sensor' : {
-        'type': 'thermo-hygrometer'
+        'type': 'thermo-hygrometer',
+        'id' : 'DHT22-0010',
     },
     'db' : {
         'type' : 'sqlite',

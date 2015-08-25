@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-
+var config = require('./config.js');
 var sensorsObj = {
     "sensors": [{
-        "type": "lux_meter",
-        "id": "lux_meter1"
+        "type": config.sensor.type,
+        "id": config.sensor.id
     }]
 };
 

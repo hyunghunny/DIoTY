@@ -25,8 +25,14 @@ exports.record = function () {
         if (dataArr.length == 2) {
             temperature = parseFloat(dataArr[0]);
             humidity = parseFloat(dataArr[1]);
+            // handle NaN as invalid serial input
+            if (temperature == NaN || humidity == NaN) {
+                console.log('invalid serial input: ' + data);
+                return;
+            }
         } else {
             console.log('invalid serial input: ' + data);
+            return;
         }
         
         var observation = {

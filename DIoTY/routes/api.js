@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var config = require('./config.js');
+var config = require('../config.js');
 var sensorsObj = {
     "sensors": [{
         "type": config.sensor.type,

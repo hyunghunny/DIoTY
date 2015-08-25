@@ -19,7 +19,7 @@ start(){
 }
 
 stop(){
-        (forever stopall)
+        (forever stop 0)
 }
 
 restart(){

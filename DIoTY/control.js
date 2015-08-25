@@ -1,5 +1,5 @@
 var dbmgr = require('./data/dbmanager.js'),
-    serialPort = require('serialport'),
+    arduino = require('./arduino-serial.js');
     config = require('./config.js');
 
 var port = config.serial.port;
@@ -9,26 +9,31 @@ var sensorType = config.sensor.type;
 var dbType = config.db.type;
 var tableName = config.db.tableName;
 
-var db = dbmgr.createDB(dbType, tableName, sensorType);
+var dbManager = dbmgr.construct(dbType, tableName, sensorType);
 
 
 exports.record = function () {
-    // XXX:Set appropriate serial port properties below
-    var sp = new serialPort.SerialPort(port, {
-        'baudrate': baud,
-        'parser': serialPort.parsers.readline('\n')
-    });
-    console.log('trying to record...');
-    sp.on('open', function () {
-        console.log('serial opened successfully.');
+    var asr = arduino.construct(port, baud);
 
-        sp.on('data', function (data) {
+    asr.listen(function (timestamp, data) {
+        
+        var dataArr = data.split(':');
 
-            var value = new String(data).trim();
-            var now = new Date();
-            var timestamp = now.getTime();
-            // TODO:save value with timestamp
-            db.save(timestamp, value);
-        });
+        var temperature = 0;
+        var humidity = 0;
+        
+        if (dataArr.length == 2) {
+            temperature = parseFloat(dataArr[0]);
+            humidity = parseFloat(dataArr[1]);
+        } else {
+            console.log('invalid serial input: ' + data);
+        }
+        
+        var observation = {
+            'temperature': temperature,
+            'humidity' : humidity
+        }
+        dbManager.save(timestamp, observation);
     });
+
 }

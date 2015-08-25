@@ -19,6 +19,7 @@
     <Content Include="install.sh" />
     <Content Include="package.json" />
     <Compile Include="app.js" />
+    <Compile Include="arduino-serial.js" />
     <Compile Include="config.js" />
     <Compile Include="control.js" />
     <Content Include="iisnode\SERIES9PLUS-10404-stdout-1412213240691.txt" />

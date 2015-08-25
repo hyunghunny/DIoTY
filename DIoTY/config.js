@@ -1,10 +1,10 @@
 ﻿var config ={
     'serial' : {
-        'port': 'COM8',
+        'port': 'COM11',
         'baud': 9600
     },
     'sensor' : {
-        'type': 'lux_meter'
+        'type': 'thermo-hygrometer'
     },
     'db' : {
         'type' : 'sqlite',

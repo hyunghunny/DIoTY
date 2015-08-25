@@ -45,4 +45,4 @@ DIoTY/bin
 DIoTY/node_modules
 DIoTY/node_modules/*
 DIoTY/node_modules/.*
-*.suo
+DIoTY/*.suo

@@ -32,6 +32,7 @@
     <Compile Include="routes\index.js" />
     <Content Include="start.sh" />
     <Content Include="tests\mysql_schema.txt" />
+    <Compile Include="sensorchart.js" />
     <Compile Include="tests\read_db.js" />
     <Compile Include="tests\serial_comm.js" />
     <Compile Include="tests\write_db.js" />

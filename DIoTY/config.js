@@ -4,12 +4,19 @@
         'baud': 9600
     },
     'sensor' : {
-        'type': 'thermo-hygrometer',
-        'id' : 'DHT22-0010',
+        'supported' : ['lux_meter', 'thermo-hygrometer'],
+        'type': 'lux_meter',
+        'id' : '19',
     },
     'db' : {
         'type' : 'sqlite',
         'tableName': 'ADS01'
+    },
+    'export' : {
+        'href' : './sensorchart.js',
+        'mode' : 'on',
+        'id' : 'webofthink',
+        'password' : '' 
     }
 };
 

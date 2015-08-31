@@ -42,8 +42,11 @@ exports.record = function () {
                         'humidity' : humidity
                     }
                     dbManager.save(timestamp, observation);
-                    observations.push(observation);
 
+                    observations.push({
+                        "datePublished" : timestamp,
+                        "value" : temperature // save temperature only.
+                    });
                 }
             } else {
                 console.log('invalid serial input: ' + data);
@@ -51,7 +54,10 @@ exports.record = function () {
         } else {
             var value = new String(data).trim();
             dbManager.save(timestamp, value);
-            observations.push(value);
+            observations.push({
+                "datePublished" : timestamp,
+                "value" : value
+            });
         }
         if (transmitter) {
             transmitter.emit(config.sensor.id, observations, function (result) {

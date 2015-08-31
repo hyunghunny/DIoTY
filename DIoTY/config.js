@@ -6,7 +6,7 @@
     'sensor' : {
         'supported' : ['lux_meter', 'thermo-hygrometer'],
         'type': 'lux_meter',
-        'id' : '19',
+        'id' : '20',
     },
     'db' : {
         'type' : 'sqlite',

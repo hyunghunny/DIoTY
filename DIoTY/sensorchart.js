@@ -105,6 +105,8 @@ var RESTTransmitter = (function () {
                 content.observations.push(observation);
             } else {
                 console.log('invalid date type: ' + datePublished);
+                cb(false);
+                return;
             }
         }
         var self = this;

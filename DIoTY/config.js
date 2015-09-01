@@ -4,8 +4,8 @@
         'baud': 9600
     },
     'sensor' : {
-        'supported' : ['lux_meter', 'thermo-hygrometer'],
-        'type': 'lux_meter',
+        'supported' : ['lux_meter', 'thermo-hygrometer', 'distance'],
+        'type': 'distance',
         'id' : '20',
     },
     'db' : {

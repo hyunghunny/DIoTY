@@ -245,18 +245,19 @@ var AJAJSONManager = (function () {
 })();
 ;
 
+var apiUrl = 'http://147.47.123.49:3000';
 // exposes API if the script executes on server side.
 if (typeof module !== 'undefined') {
-    exports.transmitter = new RESTTransmitter('http://147.47.123.49:3000');
+    exports.transmitter = new RESTTransmitter(apiUrl);
     
     exports.login = function (id, password, cb) {
-        var transmitter = new RESTTransmitter('http://147.47.123.49:3000');
+        var transmitter = new RESTTransmitter(apiUrl);
         transmitter.login(id, password, cb);
     }
 
 } else {
     sensorchart.login = function (id, password, cb) {
-        var transmitter = new RESTTransmitter('http://147.47.123.49:3000');
+        var transmitter = new RESTTransmitter(apiUrl);
         transmitter.login(id, password, cb);
     }
 }

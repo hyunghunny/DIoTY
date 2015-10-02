@@ -49,3 +49,4 @@ DIoTY/typings
 # enable if you want to download node modules manually.
 DIoTY/node_modules
 *.suo
+*.db

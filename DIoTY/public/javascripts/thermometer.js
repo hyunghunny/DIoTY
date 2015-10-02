@@ -109,26 +109,14 @@ var socket = null;
 var timeWidget = document.getElementById('timeWidget');
 var humidityWidget = document.getElementById('humidityWidget');
 
-$(document).ready(function () {
-    socket = io.connect();
-    var now = new Date();
-    var consoleDiv = $('#console');
-    console.log('socket connected');
-    
-    socket.on('update', function (latest) {
-        var jsonObj = JSON.parse(latest);
-        currentTemperature = latest.temperature;
-        timeWidget.innerHTML = new Date(latest.datePublished).toLocaleTimeString();
-        humidityWidget.innerHTML = latest.humidity + "%";
-        draw(); 
-    })
-});
+
+
 $(document).unload(function () {
     if (socket) socket.disconnect();
     console.log('disconnect a socket');
 });
 
-/*
+
 // Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
 var mySensor;
@@ -140,11 +128,7 @@ myapi.sensors.retrieve(function (sensors) {
         // show the 1st thermometer's latest temperature
         mySensor = sensors[0];
         turnOnSensor(mySensor, function () {
-            // update UI per 5 secs
-            setInterval(function () {
-                console.log('update event fired');
-                getLatestTemperature(mySensor);
-            }, 5000);
+            addSocketListener();
         });
     }
 });
@@ -161,6 +145,7 @@ function turnOnSensor(sensor, cb) {
     cb();
 }
 
+// update by polling
 function getLatestTemperature(sensor) {
     sensor.getLatestTemp(function (temp) {
         logger.i('latest temperature is ' + temp.value + ' ' + temp.unitOfMeasure);
@@ -172,4 +157,19 @@ function getLatestTemperature(sensor) {
 
         draw();        
     });
-}*/
+}
+
+// realtime update by web socket
+function addSocketListener() {
+    socket = io.connect();
+    
+    console.log('socket connected');
+    
+    socket.on('update', function (latest) {
+        var jsonObj = JSON.parse(latest);
+        currentTemperature = latest.temperature;
+        timeWidget.innerHTML = new Date(latest.datePublished).toLocaleTimeString();
+        humidityWidget.innerHTML = latest.humidity + "%";
+        draw();
+    })
+};

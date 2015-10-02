@@ -135,12 +135,11 @@ Thermometer.prototype.setMode = function (mode, cb) {
             arduino.board.connect(function () {
                 if (!dbmgr.isReady()) {
                     // error to open mongodb 
-                    console.log('mongodb does not initialize properly.');
+                    console.log('database does not initialize properly.');
                     cb(false);
                 } else {
                     // console.log('register hygrometer listener');
                     addSensorListener();
-                    );
                     cb(true);
                 }
 

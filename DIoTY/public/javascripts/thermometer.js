@@ -109,14 +109,6 @@ var socket = null;
 var timeWidget = document.getElementById('timeWidget');
 var humidityWidget = document.getElementById('humidityWidget');
 
-
-
-$(document).unload(function () {
-    if (socket) socket.disconnect();
-    console.log('disconnect a socket');
-});
-
-
 // Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
 var mySensor;

@@ -105,7 +105,7 @@ function draw() {
 	}
 }
 
-var socket = null;
+var socket = io.connect();
 var timeWidget = document.getElementById('timeWidget');
 var humidityWidget = document.getElementById('humidityWidget');
 
@@ -153,12 +153,9 @@ function getLatestTemperature(sensor) {
 
 // realtime update by web socket
 function addSocketListener() {
-    socket = io.connect();
-    
-    console.log('socket connected');
     
     socket.on('update', function (latest) {
-        var jsonObj = JSON.parse(latest);
+        console.log(latest);
         currentTemperature = latest.temperature;
         timeWidget.innerHTML = new Date(latest.datePublished).toLocaleTimeString();
         humidityWidget.innerHTML = latest.humidity + "%";

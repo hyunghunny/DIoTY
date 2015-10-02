@@ -16,6 +16,8 @@ var thermometer = require('./routes/thermometer');
 // add to response trends page
 var trends = require('./routes/trends');
 
+// add to stream real time data via web socket
+var stream = require('./stream.js');
 
 var app = express();
 
@@ -89,8 +91,12 @@ app.use(function(err, req, res, next) {
 var http = require('http');
 var config = require('./config');
 
-http.createServer(app).listen(config.server.port, function () {
+var expressServer = http.createServer(app).listen(config.server.port, function () {
     console.log("Express server listening on port " + config.server.port);
+});
+
+stream.connect(expressServer, function (socket) {
+    console.log('socket connected.');
 });
 
 module.exports = app;

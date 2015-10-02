@@ -31,11 +31,14 @@
     <Compile Include="dbmgr.js" />
     <Compile Include="public\javascripts\gchart.js" />
     <TypeScriptCompile Include="public\javascripts\api.ts" />
+    <Compile Include="public\javascripts\socket.io.js" />
+    <Compile Include="public\javascripts\thermometer.js" />
     <Compile Include="routes\api.js" />
     <Compile Include="routes\index.js" />
     <Content Include="tests\mysql_schema.txt" />
     <Compile Include="routes\trends.js" />
     <Compile Include="routes\thermometer.js" />
+    <Compile Include="stream.js" />
     <Compile Include="tests\duino-thermometer.js" />
     <Compile Include="tests\serial_comm.js" />
     <Content Include="views\basic.jade" />

@@ -11,6 +11,8 @@ var dbmgr = new DBManager(config.mongodb);
 var sensorchart = require('./sensorchart_api.js');
 var transmitter = sensorchart.transmitter;
 
+var stream = require('./stream.js');
+
 var id = 'webofthink';
 var password = '';
 var isLogin = false;
@@ -109,6 +111,24 @@ var Thermometer = function (id) {
 
 var listenerId = null;
 
+// add appropriate sensor listener below
+function addSensorListener() {
+    listenerId = arduino.board.hygrometer.addListener(
+        function (tempValue, humidityValue) {
+            // console.log('insert into db');
+            transmit(tempValue, humidityValue);
+            dbmgr.insert(tempValue, humidityValue);
+            var now = new Date();
+            var realtimeObj = {
+                "datePublished": now.getTime(),
+                "temperature": tempValue,
+                "humidity": humidityValue
+            };
+            stream.emit(realtimeObj);
+        }
+    );
+}
+
 Thermometer.prototype.setMode = function (mode, cb) {
     if (mode == 'on') {
         if (listenerId == null) {            
@@ -119,12 +139,7 @@ Thermometer.prototype.setMode = function (mode, cb) {
                     cb(false);
                 } else {
                     // console.log('register hygrometer listener');
-                    listenerId = arduino.board.hygrometer.addListener(
-                        function (tempValue, humidityValue) {
-                            // console.log('insert into db');
-                            transmit(tempValue, humidityValue);
-                            dbmgr.insert(tempValue, humidityValue);
-                        }
+                    addSensorListener();
                     );
                     cb(true);
                 }

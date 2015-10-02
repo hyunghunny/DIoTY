@@ -1,5 +1,5 @@
-var img;
-var currentTemperature;
+var img = null;
+var currentTemperature = 0;
 
 function getRatio(iTemp) {
 	/* The image is not in proportion this the gauge to pixel 
@@ -105,6 +105,30 @@ function draw() {
 	}
 }
 
+var socket = null;
+var timeWidget = document.getElementById('timeWidget');
+var humidityWidget = document.getElementById('humidityWidget');
+
+$(document).ready(function () {
+    socket = io.connect();
+    var now = new Date();
+    var consoleDiv = $('#console');
+    console.log('socket connected');
+    
+    socket.on('update', function (latest) {
+        var jsonObj = JSON.parse(latest);
+        currentTemperature = latest.temperature;
+        timeWidget.innerHTML = new Date(latest.datePublished).toLocaleTimeString();
+        humidityWidget.innerHTML = latest.humidity + "%";
+        draw(); 
+    })
+});
+$(document).unload(function () {
+    if (socket) socket.disconnect();
+    console.log('disconnect a socket');
+});
+
+/*
 // Add below code to get latest temperature of a sensor.
 var myapi = new OpenAPIManager();
 var mySensor;
@@ -148,4 +172,4 @@ function getLatestTemperature(sensor) {
 
         draw();        
     });
-}
+}*/

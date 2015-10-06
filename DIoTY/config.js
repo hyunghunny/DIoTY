@@ -1,10 +1,10 @@
-﻿var config ={
+﻿var config = {
     'serial' : {
         'port': '/dev/ttyUSB0',
         'baud': 9600
     },
     'sensor' : {
-        'supported' : ['lux_meter', 'thermo-hygrometer', 'distance'],
+        'supported' : ['ibeacon' ,'lux_meter', 'thermo-hygrometer', 'distance', 'people_counter'],
         'type': 'distance',
         'id' : '19',
     },

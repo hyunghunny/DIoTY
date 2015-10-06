@@ -20,7 +20,6 @@ if (config.export.mode == 'on') {
     });
 }
 
-
 exports.record = function () {
     var asr = arduino.construct(port, baud);
 

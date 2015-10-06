@@ -155,7 +155,7 @@ function getLatestTemperature(sensor) {
 function addSocketListener() {
     
     socket.on('update', function (latest) {
-        console.log(latest);
+        //console.log(latest);
         currentTemperature = latest.temperature;
         timeWidget.innerHTML = new Date(latest.datePublished).toLocaleTimeString();
         humidityWidget.innerHTML = latest.humidity + "%";

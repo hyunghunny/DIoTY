@@ -4,8 +4,8 @@
         'baud': 9600
     },
     'sensor' : {
-        'supported' : ['ibeacon' ,'lux_meter', 'thermo-hygrometer', 'distance', 'people_counter'],
-        'type': 'distance',
+        'supported' : ['ibeacon_scanner' ,'lux_meter', 'thermo-hygrometer', 'distance_meter', 'people_counter'],
+        'type': 'distance_meter',
         'id' : '19',
     },
     'db' : {
@@ -13,7 +13,7 @@
         'tableName': 'ADS01'
     },
     'export' : {
-        'href' : './sensorchart.js',
+        'href' : './export/sensorchart.js',
         'mode' : 'on',
         'id' : 'webofthink',
         'password' : '' 

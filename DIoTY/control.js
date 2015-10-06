@@ -1,12 +1,11 @@
-var dbmgr = require('./data/dbmanager.js'),
-    arduino = require('./arduino-serial.js');
-    config = require('./config.js');
+var dbmgr = require('./database/dbmanager.js');
 
-var sensorchart = require('./sensorchart.js');
+var config = require('./config.js');
+
+var sensorchart = require('./export/sensorchart.js');
 var transmitter = null;
 
-var port = config.serial.port;
-var baud = config.serial.baud;
+var sensorReader = require('./controller/arduino-serial.js');
 var sensorType = config.sensor.type;
 
 var dbType = config.db.type;
@@ -21,9 +20,9 @@ if (config.export.mode == 'on') {
 }
 
 exports.record = function () {
-    var asr = arduino.construct(port, baud);
+    var reader = sensorReader(config);
 
-    asr.listen(function (timestamp, data) {
+    reader.onUpdated(function (timestamp, data) {
         var observations = [];
         if (sensorType == 'thermo-hygrometer') {
             var dataArr = data.split(':');

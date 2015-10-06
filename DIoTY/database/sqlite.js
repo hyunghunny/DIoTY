@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Sqlite = (function () {
     function Sqlite(type) {
         this.type = type;
-        this.dbfile = './data/' + type + '.db';
+        this.dbfile = './database/' + type + '.db';
         this.table = '';
         this.database = null;
     }

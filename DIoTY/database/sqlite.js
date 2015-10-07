@@ -34,14 +34,28 @@ var Sqlite = (function () {
         this.database = new sqlite3.Database(this.dbfile);    
     };
     
-    Sqlite.prototype.getTableName = function () {
-        return this.table;
-    };
-
-    Sqlite.prototype.setTableName = function (tableName) {
+    Sqlite.prototype.createTable = function (tableName, schema) {
+        // schema may be "(timestamp DATETIME DEFAULT CURRENT_TIMESTAMP PRIMARY KEY NOT NULL," + this.title + " INTEGER NOT NULL)";
+        var query = "CREATE TABLE IF NOT EXISTS " + tableName + " " + schema;
+   
+        this.database.run(query);
         this.table = tableName;
-    };
-    Sqlite.prototype.find = function (callback, condition) {
+        console.log(tableName + ' table created: ' + schema);
+    }; 
+    
+    Sqlite.prototype.insert = function (table, timestamp, value) {
+        var self = this;
+        this.database.serialize(function () {
+            var query = "INSERT INTO " + table + "(timestamp, " + self.title + ") VALUES (?,?)";
+            var stmt = self.database.prepare(query);
+            stmt.run(timestamp, value, function () {
+                console.log(timestamp + ", " + value);
+            });
+            stmt.finalize();
+        });
+    };    
+
+    Sqlite.prototype.find = function (table, callback, condition) {
         this.database.serialize(function () {
             //condition은 사용자에게 입력받은 조건(where절)
             if (typeof condition === 'string') {

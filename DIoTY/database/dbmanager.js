@@ -74,6 +74,6 @@ DBManager.prototype.close = function () {
     console.log('database closed');
 }
 
-exports.construct = function (dbType, tableName, sensorType) {
+module.exports = function (dbType, tableName, sensorType) {
     return new DBManager(dbType, tableName, sensorType);
 }

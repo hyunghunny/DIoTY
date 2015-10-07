@@ -57,7 +57,7 @@ var Sqlite = (function () {
 
     Sqlite.prototype.find = function (table, callback, condition) {
         this.database.serialize(function () {
-            //condition은 사용자에게 입력받은 조건(where절)
+            //TODO:condition should be confirmed
             if (typeof condition === 'string') {
                 var stmt = "SELECT * from " + table + " where " + condition;
             }
@@ -197,8 +197,9 @@ var realrealParamsDB = (function (_super) {
 
 
 
-exports.construct = function (type) {
-    var dbObj = null;
+module.exports = function (type) {
+    var dbObj = new Sqlite(type);
+    /*
     switch (type) {
         case 'lux_meter':
             dbObj = new realParamDB(type, 'value');
@@ -210,5 +211,6 @@ exports.construct = function (type) {
             dbObj = new intParamDB(type, 'value');
             break;               
     }
+    */
     return dbObj;
 }

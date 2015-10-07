@@ -1,7 +1,7 @@
 
 function DBManager(dbType, tableName, sensorType) {
     
-    this.database = require('./' + dbType + '.js').construct(sensorType);
+    this.database = require('./' + dbType + '.js')(sensorType);
     
     if (!this.database.hasDB()) {
         this.database.createDB(); // data base file creation
@@ -13,7 +13,7 @@ function DBManager(dbType, tableName, sensorType) {
 
 }
 
-DBManager.prototype.setTable = function (sensorType, tableName) {
+DBManager.prototype.setup = function (sensorType, tableName) {
     switch (sensorType) {
         case 'distance':
             this.database.createTable(tableName, 'cm'); 

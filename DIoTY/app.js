@@ -78,9 +78,14 @@ app.use(function(err, req, res, next) {
 
 // create http server at port 3000
 var http = require('http');
-http.createServer(app).listen(3000, function () {
+var server = http.createServer(app).listen(3000, function () {
     console.log("Express server listening on port 3000");
-    controller.record();
+    controller.run();
+});
+
+var broadcaster = require('./export/broadcast.js');
+broadcaster.connect(server, function () {
+    console.log('socket.io is connected.');
 });
 
 module.exports = app;

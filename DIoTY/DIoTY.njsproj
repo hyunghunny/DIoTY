@@ -31,7 +31,7 @@
     <Compile Include="database\mongodb.js" />
     <Compile Include="database\mysql.js" />
     <Compile Include="database\sqlite.js" />
-    <Compile Include="export\notify.js" />
+    <Compile Include="export\broadcast.js" />
     <Compile Include="public\javascripts\gchart.js" />
     <Compile Include="routes\api.js" />
     <Compile Include="routes\index.js" />

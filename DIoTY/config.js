@@ -3,20 +3,18 @@
         'port': '/dev/ttyUSB0',
         'baud': 9600
     },
+    'gpio' : {
+    },
     'sensor' : {
         'supported' : ['ibeacon_scanner' ,'lux_meter', 'thermo-hygrometer', 'distance_meter', 'people_counter'],
-        'type': 'distance_meter',
-        'id' : '19',
+        'type': 'thermo-hygrometer',
     },
-    'db' : {
-        'type' : 'sqlite',
-        'tableName': 'ADS01'
+    'database' : {
+        'type' : 'sqlite'
     },
     'export' : {
-        'href' : './export/sensorchart.js',
-        'mode' : 'on',
-        'id' : 'webofthink',
-        'password' : '' 
+        'mode' : 'off',
+        'interval' : 60000, // 1 minutes
     }
 };
 

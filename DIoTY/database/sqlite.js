@@ -55,7 +55,7 @@ var Sqlite = (function () {
         });
     };    
 
-    Sqlite.prototype.find = function (table, callback, condition) {
+    Sqlite.prototype.inquire = function (table, callback, condition) {
         this.database.serialize(function () {
             //TODO:condition should be confirmed
             if (typeof condition === 'string') {
@@ -76,7 +76,7 @@ var Sqlite = (function () {
     Sqlite.prototype.closeDB = function () { };
     return Sqlite;
 })();
-
+/*
 var intParamDB = (function (_super) {
     __extends(intParamDB, _super);
     function intParamDB(type, title) {
@@ -194,7 +194,7 @@ var realrealParamsDB = (function (_super) {
     };
     return realrealParamsDB;
 })(Sqlite);
-
+*/
 
 
 module.exports = function (type) {

@@ -1,5 +1,5 @@
 
-function DBManager(dbType, tableName, sensorType) {
+function DBManager(dbType, sensorType) {
     
     this.database = require('./' + dbType + '.js')(sensorType);
     
@@ -8,72 +8,51 @@ function DBManager(dbType, tableName, sensorType) {
     } else {
         this.database.openDB();
     }
-    this.setTable(sensorType, tableName);
-    this.sensorType = sensorType;
-
 }
 
-DBManager.prototype.setup = function (sensorType, tableName) {
-    switch (sensorType) {
-        case 'distance':
-            this.database.createTable(tableName, 'cm'); 
-            break;
-        case 'ibeacon':
-            this.database.createTable(tableName, 'uuid', 'meter'); 
-            break;
-        case 'thermo-hygrometer':
-            this.database.createTable(tableName, 'temperature', 'humidity');
-            break;
-        default:
-            this.database.createTable(tableName, 'value');
-            break;
+DBManager.prototype.setup = function (dbTables) {
+    for (var tableName in dbTables) {
+        if (dbTables.hasOwnProperty(tableName)) {
+            var dbTable = dbTables[tableName];
+            var query = '(';
+            for (var attribute in dbTable) {
+                if (dbTable.hasOwnProperty(attribute)) {
+                    console.log(tableName + ":" + attribute + ":" + dbTable[attribute]);
+                    // create table query
+                    query = query + (attribute + ' ' + dbTable[attribute] + ',');
+                }                
+            }
+            // replace the end colon ',' to closed parenthese ')'
+            query = query.substring(0, query.length - 1) + ')';
+            
+            // create DB table
+            console.log(query);
+            
+            this.database.createTable(tableName, query);
+
+        }
+
     }
+}
+
+DBManager.prototype.save = function (table, timestamp, val) {
     
-    this.database.setTableName(tableName);
-}
-
-DBManager.prototype.save = function (timestamp, obj) {
-    // check database is ready
-    if (this.database.getTableName() == '') {
-        return false;
-    }
-    if (this.sensorType == 'ibeacon') {
-        this.database.insert(timestamp, obj.uuid, obj.accuracy);
-    } 
-    else if (this.sensorType == 'thermo-hygrometer') {
-        this.database.insert(timestamp, obj.temperature, obj.humidity);
-    }    
-    else {
-        this.database.insert(timestamp, obj);
-    }
-    return true;
+    this.database.insert(table, timestamp, val);
 }
 
 
-DBManager.prototype.inquire = function (condition, cb) {
-    // check database is ready
-    if (this.database.getTableName() == '') {
-        cb(false);
-        return;
-    }
-    // TODO:creating appropriate condition required
+DBManager.prototype.find = function (table, condition, cb) {
     
-    if (typeof condition === 'string') {
-        this.database.find(function (rows) {
-            cb(rows);
-        }, condition);
-    } else {
-        this.database.find(function (rows) {
-            cb(rows);
-        });
-    }
-
+    this.database.inquire(table, function (rows) {
+        cb(rows);
+    }, query);
 }
+
 DBManager.prototype.close = function () {
     this.database.closeDB();
     console.log('database closed');
 }
 
-module.exports = function (dbType, tableName, sensorType) {
-    return new DBManager(dbType, tableName, sensorType);
+module.exports = function (dbType, sensorType) {
+    return new DBManager(dbType, sensorType);
 }

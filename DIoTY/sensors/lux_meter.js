@@ -1,7 +1,7 @@
 ﻿// This sensor measures an ambient illuminance.
 // An observation consists with the timestamp and the value (measured by lux)
 
-var dbmgr = require('./database/dbmanager.js');
+var dbmgr = require('../database/dbmanager.js');
 
 // observation creation function
 function Observation(timestamp, val) {
